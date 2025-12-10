@@ -1,0 +1,1135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MI HR - Performance Management</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+            color: #333;
+            overflow-x: hidden;
+        }
+
+        /* Top Bar */
+        .top-bar {
+            background: white;
+            height: 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 30px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+        }
+
+        .app-title {
+            display: flex;
+            flex-direction: column;
+            cursor: pointer;
+        }
+
+        .app-title h1 {
+            font-size: 20px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .app-title span {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .top-bar-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .notification-icon {
+            position: relative;
+            cursor: pointer;
+            font-size: 20px;
+            color: #666;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        /* Main Container */
+        .container {
+            display: flex;
+            margin-top: 60px;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 250px;
+            background: #2c3e50;
+            color: white;
+            height: calc(100vh - 60px);
+            position: fixed;
+            left: 0;
+            overflow-y: auto;
+            padding-top: 20px;
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            padding: 15px 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .menu-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .menu-item.active {
+            background: #3498db;
+            color: white;
+        }
+
+        .menu-icon {
+            width: 24px;
+            height: 24px;
+            margin-right: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        .badge {
+            margin-left: auto;
+            background: #e74c3c;
+            color: white;
+            border-radius: 12px;
+            padding: 2px 8px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 250px;
+            padding: 30px;
+            width: calc(100% - 250px);
+        }
+
+        .page-header {
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .page-header h2 {
+            font-size: 28px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .page-header p {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: #2196f3;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #1976d2;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #e0e0e0;
+            flex-wrap: wrap;
+        }
+
+        .tab {
+            padding: 12px 20px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            color: #666;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+            position: relative;
+            top: 2px;
+        }
+
+        .tab:hover {
+            color: #2196f3;
+        }
+
+        .tab.active {
+            color: #2196f3;
+            border-bottom-color: #2196f3;
+        }
+
+        /* Content Sections */
+        .content-section {
+            display: none;
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        .section-card {
+            background: white;
+            border-radius: 8px;
+            padding: 25px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        /* Goals */
+        .goal-card {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 15px;
+        }
+
+        .goal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 15px;
+        }
+
+        .goal-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .goal-kpi {
+            font-size: 12px;
+            color: #666;
+            padding: 4px 10px;
+            background: #f5f5f5;
+            border-radius: 12px;
+        }
+
+        .goal-description {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 15px;
+        }
+
+        .goal-progress {
+            margin-top: 15px;
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        .progress-percent {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 10px;
+            background: #f0f0f0;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: #4caf50;
+            border-radius: 5px;
+            transition: width 0.3s ease;
+        }
+
+        /* Forms */
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            font-size: 13px;
+            font-weight: 500;
+            color: #666;
+            margin-bottom: 8px;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            padding: 10px 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #2196f3;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        /* Tables */
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: #f5f5f5;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        th {
+            font-weight: 600;
+            color: #666;
+            font-size: 13px;
+            text-transform: uppercase;
+        }
+
+        td {
+            font-size: 14px;
+            color: #333;
+        }
+
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .status-pending {
+            background: #fff9e6;
+            color: #ff9800;
+        }
+
+        .status-completed {
+            background: #e8f5e9;
+            color: #4caf50;
+        }
+
+        .status-draft {
+            background: #f5f5f5;
+            color: #666;
+        }
+
+        /* 1:1 Meetings */
+        .meeting-card {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 15px;
+        }
+
+        .meeting-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .meeting-date {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .meeting-participants {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .meeting-notes {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 15px;
+            line-height: 1.6;
+        }
+
+        .action-items {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #f0f0f0;
+        }
+
+        .action-item {
+            display: flex;
+            align-items: center;
+            padding: 8px 0;
+            font-size: 14px;
+        }
+
+        .action-checkbox {
+            margin-right: 10px;
+        }
+
+        /* Reviews */
+        .review-card {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 15px;
+        }
+
+        .review-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .review-period {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .review-score {
+            font-size: 24px;
+            font-weight: 600;
+            color: #2196f3;
+        }
+
+        .scoring-matrix {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .score-item {
+            text-align: center;
+            padding: 10px;
+            background: #f5f5f5;
+            border-radius: 6px;
+        }
+
+        .score-value {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .score-label {
+            font-size: 11px;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        /* 360 Feedback */
+        .feedback-card {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 15px;
+        }
+
+        .feedback-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+
+        .feedback-from {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .feedback-anonymous {
+            font-size: 12px;
+            color: #999;
+            font-style: italic;
+        }
+
+        .feedback-text {
+            font-size: 14px;
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 10px;
+        }
+
+        .feedback-date {
+            font-size: 12px;
+            color: #999;
+        }
+    </style>
+</head>
+<body>
+    <!-- Top Bar -->
+    <div class="top-bar">
+        <div class="app-title" onclick="navigateToPage('dashboard')">
+            <h1>MI HR</h1>
+            <span>Human Resources</span>
+        </div>
+        <div class="top-bar-right">
+            <div class="notification-icon">🔔</div>
+            <div class="user-avatar">HR</div>
+        </div>
+    </div>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="menu-item" onclick="navigateToPage('dashboard')">
+                <div class="menu-icon">🏠</div>
+                <span>HR Dashboard</span>
+            </div>
+            <div class="menu-item" onclick="navigateToPage('myinfo')">
+                <div class="menu-icon">👤</div>
+                <span>My Info</span>
+            </div>
+            <div class="menu-item" onclick="navigateToPage('people')">
+                <div class="menu-icon">👥</div>
+                <span>People</span>
+            </div>
+            <div class="menu-item" onclick="navigateToPage('hiring')">
+                <div class="menu-icon">➕</div>
+                <span>Hiring & Onboarding</span>
+            </div>
+            <div class="menu-item active" onclick="navigateToPage('performance')">
+                <div class="menu-icon">🎯</div>
+                <span>Performance</span>
+            </div>
+            <div class="menu-item" onclick="navigateToPage('compensation')">
+                <div class="menu-icon">💰</div>
+                <span>Compensation</span>
+            </div>
+            <div class="menu-item" onclick="navigateToPage('payroll')">
+                <div class="menu-icon">📄</div>
+                <span>Payroll</span>
+            </div>
+            <div class="menu-item" onclick="navigateToPage('training')">
+                <div class="menu-icon">📚</div>
+                <span>Training</span>
+            </div>
+            <div class="menu-item" onclick="navigateToPage('reports')">
+                <div class="menu-icon">📊</div>
+                <span>Reports</span>
+            </div>
+            <div class="menu-item" onclick="navigateToPage('inbox')">
+                <div class="menu-icon">✉️</div>
+                <span>Inbox</span>
+                <span class="badge">12</span>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="page-header">
+                <div>
+                    <h2>Performance Management</h2>
+                    <p>Manage goals, reviews, 1:1 meetings, and feedback</p>
+                </div>
+                <button class="btn btn-primary" onclick="addGoal()">+ Add Goal</button>
+            </div>
+
+            <!-- Tabs -->
+            <div class="tabs">
+                <div class="tab active" onclick="showTab('goals')">Goals Management</div>
+                <div class="tab" onclick="showTab('meetings')">1:1 Meetings</div>
+                <div class="tab" onclick="showTab('reviews')">Reviews</div>
+                <div class="tab" onclick="showTab('feedback')">360 Feedback</div>
+                <div class="tab" onclick="showTab('calibration')">Calibration</div>
+            </div>
+
+            <!-- Goals Management -->
+            <div id="goals" class="content-section active">
+                <div class="section-card">
+                    <div class="section-title">Add Goal</div>
+                    <form class="form-grid">
+                        <div class="form-group">
+                            <label>Goal Title *</label>
+                            <input type="text" placeholder="Enter goal title" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Assigned To *</label>
+                            <select required>
+                                <option>Select Employee</option>
+                                <option>John Doe</option>
+                                <option>Sarah Johnson</option>
+                                <option>Michael Chen</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Target Date *</label>
+                            <input type="date" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Align to Company KPI</label>
+                            <select>
+                                <option>Select KPI</option>
+                                <option>Revenue Growth</option>
+                                <option>Customer Satisfaction</option>
+                                <option>Product Quality</option>
+                                <option>Team Productivity</option>
+                            </select>
+                        </div>
+                        <div class="form-group full-width">
+                            <label>Description</label>
+                            <textarea rows="4" placeholder="Enter goal description..."></textarea>
+                        </div>
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-primary">Create Goal</button>
+                            <button type="button" class="btn" style="background: #f5f5f5; margin-left: 10px;">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="section-card">
+                    <div class="section-title">Active Goals</div>
+                    <div class="goal-card">
+                        <div class="goal-header">
+                            <div>
+                                <div class="goal-title">Complete Q4 Project Deliverables</div>
+                                <span class="goal-kpi">Aligned to: Team Productivity</span>
+                            </div>
+                        </div>
+                        <div class="goal-description">Deliver all Q4 project milestones on time with quality standards met.</div>
+                        <div class="goal-progress">
+                            <div class="progress-header">
+                                <span style="font-size: 13px; color: #666;">Progress</span>
+                                <span class="progress-percent">75%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 75%"></div>
+                            </div>
+                        </div>
+                        <div style="margin-top: 15px; font-size: 13px; color: #666;">
+                            <span>Assigned to: John Doe</span>
+                            <span style="margin-left: 20px;">Target: Dec 31, 2024</span>
+                        </div>
+                    </div>
+
+                    <div class="goal-card">
+                        <div class="goal-header">
+                            <div>
+                                <div class="goal-title">Improve Code Quality Metrics</div>
+                                <span class="goal-kpi">Aligned to: Product Quality</span>
+                            </div>
+                        </div>
+                        <div class="goal-description">Reduce code review cycle time and improve test coverage to 90%.</div>
+                        <div class="goal-progress">
+                            <div class="progress-header">
+                                <span style="font-size: 13px; color: #666;">Progress</span>
+                                <span class="progress-percent">90%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 90%"></div>
+                            </div>
+                        </div>
+                        <div style="margin-top: 15px; font-size: 13px; color: #666;">
+                            <span>Assigned to: Sarah Johnson</span>
+                            <span style="margin-left: 20px;">Target: Dec 31, 2024</span>
+                        </div>
+                    </div>
+
+                    <div class="goal-card">
+                        <div class="goal-header">
+                            <div>
+                                <div class="goal-title">Mentor Junior Developers</div>
+                                <span class="goal-kpi">Aligned to: Team Productivity</span>
+                            </div>
+                        </div>
+                        <div class="goal-description">Conduct weekly mentoring sessions and help 3 junior developers improve their skills.</div>
+                        <div class="goal-progress">
+                            <div class="progress-header">
+                                <span style="font-size: 13px; color: #666;">Progress</span>
+                                <span class="progress-percent">60%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 60%"></div>
+                            </div>
+                        </div>
+                        <div style="margin-top: 15px; font-size: 13px; color: #666;">
+                            <span>Assigned to: John Doe</span>
+                            <span style="margin-left: 20px;">Target: Jan 31, 2025</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 1:1 Meetings -->
+            <div id="meetings" class="content-section">
+                <div class="section-card">
+                    <div class="section-title">Schedule 1:1 Meeting</div>
+                    <form class="form-grid">
+                        <div class="form-group">
+                            <label>Employee *</label>
+                            <select required>
+                                <option>Select Employee</option>
+                                <option>John Doe</option>
+                                <option>Sarah Johnson</option>
+                                <option>Michael Chen</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Date *</label>
+                            <input type="date" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Time *</label>
+                            <input type="time" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Duration</label>
+                            <select>
+                                <option>30 minutes</option>
+                                <option>45 minutes</option>
+                                <option>60 minutes</option>
+                            </select>
+                        </div>
+                        <div class="form-group full-width">
+                            <label>Agenda</label>
+                            <textarea rows="3" placeholder="Enter meeting agenda..."></textarea>
+                        </div>
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-primary">Schedule Meeting</button>
+                            <button type="button" class="btn" style="background: #f5f5f5; margin-left: 10px;">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="section-card">
+                    <div class="section-title">1:1 Meeting History</div>
+                    <div class="meeting-card">
+                        <div class="meeting-header">
+                            <div>
+                                <div class="meeting-date">December 10, 2024 - 2:00 PM</div>
+                                <div class="meeting-participants">John Doe & Sarah Johnson</div>
+                            </div>
+                        </div>
+                        <div class="meeting-notes">
+                            <strong>Notes:</strong> Discussed Q4 project progress and upcoming deadlines. John is on track with deliverables. Discussed career development opportunities and training needs.
+                        </div>
+                        <div class="action-items">
+                            <strong style="font-size: 14px; color: #333;">Action Items:</strong>
+                            <div class="action-item">
+                                <input type="checkbox" class="action-checkbox" checked>
+                                <span>Schedule follow-up meeting for next week</span>
+                            </div>
+                            <div class="action-item">
+                                <input type="checkbox" class="action-checkbox">
+                                <span>Assign leadership training course</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="meeting-card">
+                        <div class="meeting-header">
+                            <div>
+                                <div class="meeting-date">November 25, 2024 - 10:00 AM</div>
+                                <div class="meeting-participants">Sarah Johnson & Michael Chen</div>
+                            </div>
+                        </div>
+                        <div class="meeting-notes">
+                            <strong>Notes:</strong> Performance review discussion. Sarah has shown excellent progress in code quality improvements. Discussed promotion opportunities.
+                        </div>
+                        <div class="action-items">
+                            <strong style="font-size: 14px; color: #333;">Action Items:</strong>
+                            <div class="action-item">
+                                <input type="checkbox" class="action-checkbox" checked>
+                                <span>Complete performance review form</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Reviews -->
+            <div id="reviews" class="content-section">
+                <div class="section-card">
+                    <div class="section-title">Review Cycles</div>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Review Period</th>
+                                    <th>Type</th>
+                                    <th>Start Date</th>
+                                    <th>End Date</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Q4 2024</td>
+                                    <td>Quarterly</td>
+                                    <td>Oct 1, 2024</td>
+                                    <td>Dec 31, 2024</td>
+                                    <td><span class="status-badge status-pending">In Progress</span></td>
+                                    <td><span style="color: #2196f3; cursor: pointer;">View / Manage</span></td>
+                                </tr>
+                                <tr>
+                                    <td>2024 Annual</td>
+                                    <td>Annual</td>
+                                    <td>Jan 1, 2024</td>
+                                    <td>Dec 31, 2024</td>
+                                    <td><span class="status-badge status-pending">In Progress</span></td>
+                                    <td><span style="color: #2196f3; cursor: pointer;">View / Manage</span></td>
+                                </tr>
+                                <tr>
+                                    <td>Q3 2024</td>
+                                    <td>Quarterly</td>
+                                    <td>Jul 1, 2024</td>
+                                    <td>Sep 30, 2024</td>
+                                    <td><span class="status-badge status-completed">Completed</span></td>
+                                    <td><span style="color: #2196f3; cursor: pointer;">View</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="section-card">
+                    <div class="section-title">Review Forms - Q4 2024</div>
+                    <div class="review-card">
+                        <div class="review-header">
+                            <div class="review-period">John Doe - Self Review</div>
+                            <div class="review-score">4.2 / 5.0</div>
+                        </div>
+                        <div style="margin-bottom: 15px;">
+                            <span class="status-badge status-pending">Pending Submission</span>
+                            <span style="margin-left: 15px; font-size: 13px; color: #666;">Due: Dec 15, 2024</span>
+                        </div>
+                        <div class="scoring-matrix">
+                            <div class="score-item">
+                                <div class="score-value">4.5</div>
+                                <div class="score-label">Technical Skills</div>
+                            </div>
+                            <div class="score-item">
+                                <div class="score-value">4.0</div>
+                                <div class="score-label">Communication</div>
+                            </div>
+                            <div class="score-item">
+                                <div class="score-value">4.3</div>
+                                <div class="score-label">Teamwork</div>
+                            </div>
+                            <div class="score-item">
+                                <div class="score-value">4.2</div>
+                                <div class="score-label">Leadership</div>
+                            </div>
+                            <div class="score-item">
+                                <div class="score-value">4.0</div>
+                                <div class="score-label">Innovation</div>
+                            </div>
+                        </div>
+                        <button class="btn btn-primary" style="margin-top: 15px;">Complete Review</button>
+                    </div>
+
+                    <div class="review-card">
+                        <div class="review-header">
+                            <div class="review-period">John Doe - Manager Review</div>
+                            <div class="review-score">4.3 / 5.0</div>
+                        </div>
+                        <div style="margin-bottom: 15px;">
+                            <span class="status-badge status-completed">Completed</span>
+                            <span style="margin-left: 15px; font-size: 13px; color: #666;">Completed: Dec 10, 2024</span>
+                        </div>
+                        <div class="scoring-matrix">
+                            <div class="score-item">
+                                <div class="score-value">4.5</div>
+                                <div class="score-label">Technical Skills</div>
+                            </div>
+                            <div class="score-item">
+                                <div class="score-value">4.2</div>
+                                <div class="score-label">Communication</div>
+                            </div>
+                            <div class="score-item">
+                                <div class="score-value">4.4</div>
+                                <div class="score-label">Teamwork</div>
+                            </div>
+                            <div class="score-item">
+                                <div class="score-value">4.3</div>
+                                <div class="score-label">Leadership</div>
+                            </div>
+                            <div class="score-item">
+                                <div class="score-value">4.1</div>
+                                <div class="score-label">Innovation</div>
+                            </div>
+                        </div>
+                        <div style="margin-top: 15px; font-size: 14px; color: #666;">
+                            <strong>Manager Comments:</strong> Excellent work on Q4 deliverables. Strong technical leadership and team collaboration.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 360 Feedback -->
+            <div id="feedback" class="content-section">
+                <div class="section-card">
+                    <div class="section-title">Request 360 Feedback</div>
+                    <form class="form-grid">
+                        <div class="form-group">
+                            <label>Employee *</label>
+                            <select required>
+                                <option>Select Employee</option>
+                                <option>John Doe</option>
+                                <option>Sarah Johnson</option>
+                                <option>Michael Chen</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Select Peers *</label>
+                            <select multiple style="height: 100px;">
+                                <option>Sarah Johnson</option>
+                                <option>Michael Chen</option>
+                                <option>Emily Rodriguez</option>
+                                <option>David Kim</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Feedback Type</label>
+                            <select>
+                                <option>Anonymous</option>
+                                <option>Named</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Due Date</label>
+                            <input type="date">
+                        </div>
+                        <div class="form-group full-width">
+                            <label>Instructions</label>
+                            <textarea rows="3" placeholder="Enter feedback instructions..."></textarea>
+                        </div>
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-primary">Send Feedback Request</button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="section-card">
+                    <div class="section-title">Feedback Summary - John Doe</div>
+                    <div class="feedback-card">
+                        <div class="feedback-header">
+                            <div class="feedback-from">Peer Feedback</div>
+                            <div class="feedback-anonymous">Anonymous</div>
+                        </div>
+                        <div class="feedback-text">
+                            "John is an excellent team player. He's always willing to help and shares knowledge freely. His technical expertise is impressive."
+                        </div>
+                        <div class="feedback-date">Received: Dec 5, 2024</div>
+                    </div>
+
+                    <div class="feedback-card">
+                        <div class="feedback-header">
+                            <div class="feedback-from">Peer Feedback</div>
+                            <div class="feedback-anonymous">Anonymous</div>
+                        </div>
+                        <div class="feedback-text">
+                            "Great mentor and leader. Provides clear guidance and constructive feedback. Could improve on time management for meetings."
+                        </div>
+                        <div class="feedback-date">Received: Dec 6, 2024</div>
+                    </div>
+
+                    <div class="feedback-card">
+                        <div class="feedback-header">
+                            <div class="feedback-from">Direct Report Feedback</div>
+                            <div class="feedback-anonymous">Anonymous</div>
+                        </div>
+                        <div class="feedback-text">
+                            "Very supportive manager. Encourages growth and provides opportunities for development. Clear communication and expectations."
+                        </div>
+                        <div class="feedback-date">Received: Dec 7, 2024</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Calibration -->
+            <div id="calibration" class="content-section">
+                <div class="section-card">
+                    <div class="section-title">Calibration Session - Q4 2024</div>
+                    <div style="margin-bottom: 20px; padding: 15px; background: #f5f5f5; border-radius: 6px;">
+                        <p style="font-size: 14px; color: #666; margin-bottom: 10px;">
+                            <strong>Purpose:</strong> Normalize ratings across departments and ensure fair performance evaluation.
+                        </p>
+                        <p style="font-size: 14px; color: #666;">
+                            <strong>Status:</strong> <span style="color: #ff9800; font-weight: 600;">In Progress</span> - Leadership moderation required
+                        </p>
+                    </div>
+
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Employee</th>
+                                    <th>Department</th>
+                                    <th>Initial Rating</th>
+                                    <th>Calibrated Rating</th>
+                                    <th>Moderator</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>John Doe</td>
+                                    <td>Engineering</td>
+                                    <td>4.2</td>
+                                    <td>4.3</td>
+                                    <td>Michael Chen</td>
+                                    <td><span class="status-badge status-completed">Normalized</span></td>
+                                </tr>
+                                <tr>
+                                    <td>Sarah Johnson</td>
+                                    <td>Engineering</td>
+                                    <td>4.5</td>
+                                    <td>4.4</td>
+                                    <td>Michael Chen</td>
+                                    <td><span class="status-badge status-completed">Normalized</span></td>
+                                </tr>
+                                <tr>
+                                    <td>Emily Rodriguez</td>
+                                    <td>Sales</td>
+                                    <td>4.8</td>
+                                    <td>4.6</td>
+                                    <td>Sarah Johnson</td>
+                                    <td><span class="status-badge status-pending">Pending</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div style="margin-top: 20px; display: flex; gap: 10px;">
+                        <button class="btn btn-primary" onclick="normalizeRatings()">Normalize Ratings</button>
+                        <button class="btn" style="background: #4caf50; color: white;" onclick="lockScores()">Lock Final Scores</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function navigateToPage(page) {
+            const pages = {
+                'dashboard': 'hr-dashboard.html',
+                'myinfo': 'my-info.html',
+                'people': 'people.html',
+                'hiring': 'hiring-onboarding.html',
+                'performance': 'performance.html',
+                'compensation': 'compensation.html',
+                'payroll': 'payroll.html',
+                'training': 'training.html',
+                'reports': 'reports.html',
+                'inbox': 'inbox.html'
+            };
+            
+            if (pages[page] && pages[page] !== '#') {
+                window.location.href = pages[page];
+            }
+        }
+
+        function showTab(tabName) {
+            document.querySelectorAll('.content-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        function addGoal() {
+            showTab('goals');
+        }
+
+        function normalizeRatings() {
+            alert('Ratings normalization will be applied');
+        }
+
+        function lockScores() {
+            alert('Final scores will be locked');
+        }
+    </script>
+</body>
+</html>
+

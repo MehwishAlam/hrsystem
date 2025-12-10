@@ -1,0 +1,1130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MI HR - People</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+            color: #333;
+            overflow-x: hidden;
+        }
+
+        /* Top Bar */
+        .top-bar {
+            background: white;
+            height: 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 30px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+        }
+
+        .app-title {
+            display: flex;
+            flex-direction: column;
+            cursor: pointer;
+        }
+
+        .app-title h1 {
+            font-size: 20px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .app-title span {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .top-bar-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .notification-icon {
+            position: relative;
+            cursor: pointer;
+            font-size: 20px;
+            color: #666;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        /* Main Container */
+        .container {
+            display: flex;
+            margin-top: 60px;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 250px;
+            background: #2c3e50;
+            color: white;
+            height: calc(100vh - 60px);
+            position: fixed;
+            left: 0;
+            overflow-y: auto;
+            padding-top: 20px;
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            padding: 15px 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .menu-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .menu-item.active {
+            background: #3498db;
+            color: white;
+        }
+
+        .menu-icon {
+            width: 24px;
+            height: 24px;
+            margin-right: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        .badge {
+            margin-left: auto;
+            background: #e74c3c;
+            color: white;
+            border-radius: 12px;
+            padding: 2px 8px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 250px;
+            padding: 30px;
+            width: calc(100% - 250px);
+        }
+
+        .page-header {
+            margin-bottom: 30px;
+        }
+
+        .page-header h2 {
+            font-size: 28px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .page-header p {
+            color: #666;
+            font-size: 14px;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .tab {
+            padding: 12px 20px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            color: #666;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+            position: relative;
+            top: 2px;
+        }
+
+        .tab:hover {
+            color: #2196f3;
+        }
+
+        .tab.active {
+            color: #2196f3;
+            border-bottom-color: #2196f3;
+        }
+
+        /* Content Sections */
+        .content-section {
+            display: none;
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        .section-card {
+            background: white;
+            border-radius: 8px;
+            padding: 25px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        /* Organization Chart */
+        .org-chart-container {
+            overflow-x: auto;
+            padding: 20px 0;
+        }
+
+        .org-level {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 40px;
+        }
+
+        .org-node {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 15px 20px;
+            min-width: 200px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .org-node:hover {
+            border-color: #2196f3;
+            box-shadow: 0 4px 12px rgba(33, 150, 243, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .org-node.ceo {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: #667eea;
+        }
+
+        .org-node.director {
+            background: #e3f2fd;
+            border-color: #2196f3;
+        }
+
+        .org-node.manager {
+            background: #f5f5f5;
+        }
+
+        .node-name {
+            font-weight: 600;
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+
+        .node-role {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .org-node.ceo .node-role {
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .node-department {
+            font-size: 11px;
+            color: #999;
+        }
+
+        .org-node.ceo .node-department {
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .org-connector {
+            position: absolute;
+            width: 2px;
+            height: 20px;
+            background: #ddd;
+            left: 50%;
+            bottom: -20px;
+            transform: translateX(-50%);
+        }
+
+        /* Employee Directory */
+        .search-filters {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .search-box {
+            position: relative;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 10px 40px 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .search-icon {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #999;
+        }
+
+        .filter-select {
+            padding: 10px 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+            background: white;
+        }
+
+        .employee-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .employee-card {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 20px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .employee-card:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            border-color: #2196f3;
+            transform: translateY(-2px);
+        }
+
+        .employee-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .employee-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 20px;
+            margin-right: 15px;
+        }
+
+        .employee-info h3 {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 3px;
+        }
+
+        .employee-info p {
+            font-size: 13px;
+            color: #666;
+        }
+
+        .employee-details {
+            border-top: 1px solid #f0f0f0;
+            padding-top: 15px;
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 13px;
+        }
+
+        .detail-label {
+            color: #666;
+        }
+
+        .detail-value {
+            color: #333;
+            font-weight: 500;
+        }
+
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 500;
+        }
+
+        .status-active {
+            background: #e8f5e9;
+            color: #4caf50;
+        }
+
+        .status-leave {
+            background: #fff9e6;
+            color: #ff9800;
+        }
+
+        .status-inactive {
+            background: #ffebee;
+            color: #f44336;
+        }
+
+        /* Teams/Departments */
+        .department-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .department-card {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .department-card:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            border-color: #2196f3;
+        }
+
+        .department-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .department-name {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .member-count {
+            background: #e3f2fd;
+            color: #2196f3;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .department-head {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .head-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            margin-right: 12px;
+        }
+
+        .head-info h4 {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 3px;
+        }
+
+        .head-info p {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .roles-breakdown {
+            margin-top: 15px;
+        }
+
+        .role-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            font-size: 13px;
+            border-bottom: 1px solid #f5f5f5;
+        }
+
+        .role-item:last-child {
+            border-bottom: none;
+        }
+
+        .role-name {
+            color: #666;
+        }
+
+        .role-count {
+            color: #333;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+    <!-- Top Bar -->
+    <div class="top-bar">
+        <div class="app-title" onclick="navigateToPage('dashboard')">
+            <h1>MI HR</h1>
+            <span>Human Resources</span>
+        </div>
+        <div class="top-bar-right">
+            <div class="notification-icon">🔔</div>
+            <div class="user-avatar">HR</div>
+        </div>
+    </div>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="menu-item" onclick="navigateToPage('dashboard')">
+                <div class="menu-icon">🏠</div>
+                <span>HR Dashboard</span>
+            </div>
+            <div class="menu-item" onclick="navigateToPage('myinfo')">
+                <div class="menu-icon">👤</div>
+                <span>My Info</span>
+            </div>
+            <div class="menu-item active" onclick="navigateToPage('people')">
+                <div class="menu-icon">👥</div>
+                <span>People</span>
+            </div>
+            <div class="menu-item" onclick="navigateToPage('hiring')">
+                <div class="menu-icon">➕</div>
+                <span>Hiring & Onboarding</span>
+            </div>
+            <div class="menu-item" onclick="navigateToPage('performance')">
+                <div class="menu-icon">🎯</div>
+                <span>Performance</span>
+            </div>
+            <div class="menu-item" onclick="navigateToPage('compensation')">
+                <div class="menu-icon">💰</div>
+                <span>Compensation</span>
+            </div>
+            <div class="menu-item" onclick="navigateToPage('payroll')">
+                <div class="menu-icon">📄</div>
+                <span>Payroll</span>
+            </div>
+            <div class="menu-item" onclick="navigateToPage('training')">
+                <div class="menu-icon">📚</div>
+                <span>Training</span>
+            </div>
+            <div class="menu-item" onclick="navigateToPage('reports')">
+                <div class="menu-icon">📊</div>
+                <span>Reports</span>
+            </div>
+            <div class="menu-item" onclick="navigateToPage('inbox')">
+                <div class="menu-icon">✉️</div>
+                <span>Inbox</span>
+                <span class="badge">12</span>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="page-header">
+                <h2>People</h2>
+                <p>Organization chart, employee directory, and team management</p>
+            </div>
+
+            <!-- Tabs -->
+            <div class="tabs">
+                <div class="tab active" onclick="showTab('orgchart')">Organization Chart</div>
+                <div class="tab" onclick="showTab('directory')">Employee Directory</div>
+                <div class="tab" onclick="showTab('teams')">Teams/Departments</div>
+            </div>
+
+            <!-- Organization Chart -->
+            <div id="orgchart" class="content-section active">
+                <div class="section-card">
+                    <div class="section-title">Organization Chart</div>
+                    <div class="org-chart-container">
+                        <!-- CEO Level -->
+                        <div class="org-level">
+                            <div class="org-node ceo" onclick="viewEmployee('ceo')">
+                                <div class="node-name">Sarah Johnson</div>
+                                <div class="node-role">Chief Executive Officer</div>
+                                <div class="node-department">Executive</div>
+                            </div>
+                        </div>
+
+                        <!-- Director Level -->
+                        <div class="org-level">
+                            <div class="org-node director" onclick="viewEmployee('dir1')">
+                                <div class="node-name">Michael Chen</div>
+                                <div class="node-role">Director of Engineering</div>
+                                <div class="node-department">Engineering</div>
+                            </div>
+                            <div class="org-node director" onclick="viewEmployee('dir2')">
+                                <div class="node-name">Emily Rodriguez</div>
+                                <div class="node-role">Director of Sales</div>
+                                <div class="node-department">Sales</div>
+                            </div>
+                            <div class="org-node director" onclick="viewEmployee('dir3')">
+                                <div class="node-name">David Kim</div>
+                                <div class="node-role">Director of HR</div>
+                                <div class="node-department">Human Resources</div>
+                            </div>
+                        </div>
+
+                        <!-- Manager Level -->
+                        <div class="org-level">
+                            <div class="org-node manager" onclick="viewEmployee('mgr1')">
+                                <div class="node-name">John Doe</div>
+                                <div class="node-role">Senior Manager</div>
+                                <div class="node-department">Engineering</div>
+                            </div>
+                            <div class="org-node manager" onclick="viewEmployee('mgr2')">
+                                <div class="node-name">Lisa Wang</div>
+                                <div class="node-role">Manager</div>
+                                <div class="node-department">Engineering</div>
+                            </div>
+                            <div class="org-node manager" onclick="viewEmployee('mgr3')">
+                                <div class="node-name">Robert Smith</div>
+                                <div class="node-role">Sales Manager</div>
+                                <div class="node-department">Sales</div>
+                            </div>
+                            <div class="org-node manager" onclick="viewEmployee('mgr4')">
+                                <div class="node-name">Jennifer Lee</div>
+                                <div class="node-role">HR Manager</div>
+                                <div class="node-department">Human Resources</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Employee Directory -->
+            <div id="directory" class="content-section">
+                <div class="section-card">
+                    <div class="section-title">Employee Directory</div>
+                    
+                    <!-- Search & Filters -->
+                    <div class="search-filters">
+                        <div class="search-box">
+                            <input type="text" placeholder="Search employees by name, email, or ID...">
+                            <span class="search-icon">🔍</span>
+                        </div>
+                        <select class="filter-select">
+                            <option>All Departments</option>
+                            <option>Engineering</option>
+                            <option>Sales</option>
+                            <option>Human Resources</option>
+                            <option>Marketing</option>
+                            <option>Finance</option>
+                        </select>
+                        <select class="filter-select">
+                            <option>All Locations</option>
+                            <option>New York</option>
+                            <option>San Francisco</option>
+                            <option>London</option>
+                            <option>Remote</option>
+                        </select>
+                        <select class="filter-select">
+                            <option>All Status</option>
+                            <option>Active</option>
+                            <option>On Leave</option>
+                            <option>Resigned</option>
+                        </select>
+                        <select class="filter-select">
+                            <option>All Levels</option>
+                            <option>Executive</option>
+                            <option>Senior</option>
+                            <option>Mid-Level</option>
+                            <option>Junior</option>
+                        </select>
+                    </div>
+
+                    <!-- Employee Cards -->
+                    <div class="employee-grid">
+                        <div class="employee-card" onclick="viewEmployeeProfile('emp1')">
+                            <div class="employee-header">
+                                <div class="employee-avatar">JD</div>
+                                <div class="employee-info">
+                                    <h3>John Doe</h3>
+                                    <p>Senior Software Engineer</p>
+                                </div>
+                            </div>
+                            <div class="employee-details">
+                                <div class="detail-row">
+                                    <span class="detail-label">Department</span>
+                                    <span class="detail-value">Engineering</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="detail-label">Location</span>
+                                    <span class="detail-value">New York</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="detail-label">Email</span>
+                                    <span class="detail-value">john.doe@company.com</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="detail-label">Phone</span>
+                                    <span class="detail-value">+1 (555) 123-4567</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="detail-label">Status</span>
+                                    <span class="status-badge status-active">Active</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="employee-card" onclick="viewEmployeeProfile('emp2')">
+                            <div class="employee-header">
+                                <div class="employee-avatar">LW</div>
+                                <div class="employee-info">
+                                    <h3>Lisa Wang</h3>
+                                    <p>Engineering Manager</p>
+                                </div>
+                            </div>
+                            <div class="employee-details">
+                                <div class="detail-row">
+                                    <span class="detail-label">Department</span>
+                                    <span class="detail-value">Engineering</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="detail-label">Location</span>
+                                    <span class="detail-value">San Francisco</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="detail-label">Email</span>
+                                    <span class="detail-value">lisa.wang@company.com</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="detail-label">Phone</span>
+                                    <span class="detail-value">+1 (555) 234-5678</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="detail-label">Status</span>
+                                    <span class="status-badge status-active">Active</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="employee-card" onclick="viewEmployeeProfile('emp3')">
+                            <div class="employee-header">
+                                <div class="employee-avatar">RS</div>
+                                <div class="employee-info">
+                                    <h3>Robert Smith</h3>
+                                    <p>Sales Manager</p>
+                                </div>
+                            </div>
+                            <div class="employee-details">
+                                <div class="detail-row">
+                                    <span class="detail-label">Department</span>
+                                    <span class="detail-value">Sales</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="detail-label">Location</span>
+                                    <span class="detail-value">New York</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="detail-label">Email</span>
+                                    <span class="detail-value">robert.smith@company.com</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="detail-label">Phone</span>
+                                    <span class="detail-value">+1 (555) 345-6789</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="detail-label">Status</span>
+                                    <span class="status-badge status-leave">On Leave</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="employee-card" onclick="viewEmployeeProfile('emp4')">
+                            <div class="employee-header">
+                                <div class="employee-avatar">JL</div>
+                                <div class="employee-info">
+                                    <h3>Jennifer Lee</h3>
+                                    <p>HR Manager</p>
+                                </div>
+                            </div>
+                            <div class="employee-details">
+                                <div class="detail-row">
+                                    <span class="detail-label">Department</span>
+                                    <span class="detail-value">Human Resources</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="detail-label">Location</span>
+                                    <span class="detail-value">New York</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="detail-label">Email</span>
+                                    <span class="detail-value">jennifer.lee@company.com</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="detail-label">Phone</span>
+                                    <span class="detail-value">+1 (555) 456-7890</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="detail-label">Status</span>
+                                    <span class="status-badge status-active">Active</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="employee-card" onclick="viewEmployeeProfile('emp5')">
+                            <div class="employee-header">
+                                <div class="employee-avatar">MC</div>
+                                <div class="employee-info">
+                                    <h3>Michael Chen</h3>
+                                    <p>Director of Engineering</p>
+                                </div>
+                            </div>
+                            <div class="employee-details">
+                                <div class="detail-row">
+                                    <span class="detail-label">Department</span>
+                                    <span class="detail-value">Engineering</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="detail-label">Location</span>
+                                    <span class="detail-value">San Francisco</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="detail-label">Email</span>
+                                    <span class="detail-value">michael.chen@company.com</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="detail-label">Phone</span>
+                                    <span class="detail-value">+1 (555) 567-8901</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="detail-label">Status</span>
+                                    <span class="status-badge status-active">Active</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="employee-card" onclick="viewEmployeeProfile('emp6')">
+                            <div class="employee-header">
+                                <div class="employee-avatar">ER</div>
+                                <div class="employee-info">
+                                    <h3>Emily Rodriguez</h3>
+                                    <p>Director of Sales</p>
+                                </div>
+                            </div>
+                            <div class="employee-details">
+                                <div class="detail-row">
+                                    <span class="detail-label">Department</span>
+                                    <span class="detail-value">Sales</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="detail-label">Location</span>
+                                    <span class="detail-value">New York</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="detail-label">Email</span>
+                                    <span class="detail-value">emily.rodriguez@company.com</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="detail-label">Phone</span>
+                                    <span class="detail-value">+1 (555) 678-9012</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="detail-label">Status</span>
+                                    <span class="status-badge status-active">Active</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Teams/Departments -->
+            <div id="teams" class="content-section">
+                <div class="department-grid">
+                    <div class="department-card">
+                        <div class="department-header">
+                            <div class="department-name">Engineering</div>
+                            <div class="member-count">42 Members</div>
+                        </div>
+                        <div class="department-head">
+                            <div class="head-avatar">MC</div>
+                            <div class="head-info">
+                                <h4>Michael Chen</h4>
+                                <p>Director of Engineering</p>
+                            </div>
+                        </div>
+                        <div class="roles-breakdown">
+                            <div class="role-item">
+                                <span class="role-name">Senior Engineers</span>
+                                <span class="role-count">12</span>
+                            </div>
+                            <div class="role-item">
+                                <span class="role-name">Software Engineers</span>
+                                <span class="role-count">20</span>
+                            </div>
+                            <div class="role-item">
+                                <span class="role-name">Junior Engineers</span>
+                                <span class="role-count">8</span>
+                            </div>
+                            <div class="role-item">
+                                <span class="role-name">Managers</span>
+                                <span class="role-count">2</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="department-card">
+                        <div class="department-header">
+                            <div class="department-name">Sales</div>
+                            <div class="member-count">28 Members</div>
+                        </div>
+                        <div class="department-head">
+                            <div class="head-avatar">ER</div>
+                            <div class="head-info">
+                                <h4>Emily Rodriguez</h4>
+                                <p>Director of Sales</p>
+                            </div>
+                        </div>
+                        <div class="roles-breakdown">
+                            <div class="role-item">
+                                <span class="role-name">Sales Managers</span>
+                                <span class="role-count">4</span>
+                            </div>
+                            <div class="role-item">
+                                <span class="role-name">Senior Sales Reps</span>
+                                <span class="role-count">10</span>
+                            </div>
+                            <div class="role-item">
+                                <span class="role-name">Sales Representatives</span>
+                                <span class="role-count">12</span>
+                            </div>
+                            <div class="role-item">
+                                <span class="role-name">Sales Associates</span>
+                                <span class="role-count">2</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="department-card">
+                        <div class="department-header">
+                            <div class="department-name">Human Resources</div>
+                            <div class="member-count">15 Members</div>
+                        </div>
+                        <div class="department-head">
+                            <div class="head-avatar">DK</div>
+                            <div class="head-info">
+                                <h4>David Kim</h4>
+                                <p>Director of HR</p>
+                            </div>
+                        </div>
+                        <div class="roles-breakdown">
+                            <div class="role-item">
+                                <span class="role-name">HR Managers</span>
+                                <span class="role-count">3</span>
+                            </div>
+                            <div class="role-item">
+                                <span class="role-name">HR Specialists</span>
+                                <span class="role-count">8</span>
+                            </div>
+                            <div class="role-item">
+                                <span class="role-name">HR Coordinators</span>
+                                <span class="role-count">4</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="department-card">
+                        <div class="department-header">
+                            <div class="department-name">Marketing</div>
+                            <div class="member-count">18 Members</div>
+                        </div>
+                        <div class="department-head">
+                            <div class="head-avatar">AM</div>
+                            <div class="head-info">
+                                <h4>Alex Martinez</h4>
+                                <p>Marketing Director</p>
+                            </div>
+                        </div>
+                        <div class="roles-breakdown">
+                            <div class="role-item">
+                                <span class="role-name">Marketing Managers</span>
+                                <span class="role-count">3</span>
+                            </div>
+                            <div class="role-item">
+                                <span class="role-name">Marketing Specialists</span>
+                                <span class="role-count">10</span>
+                            </div>
+                            <div class="role-item">
+                                <span class="role-name">Content Creators</span>
+                                <span class="role-count">5</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="department-card">
+                        <div class="department-header">
+                            <div class="department-name">Finance</div>
+                            <div class="member-count">12 Members</div>
+                        </div>
+                        <div class="department-head">
+                            <div class="head-avatar">PT</div>
+                            <div class="head-info">
+                                <h4>Patricia Taylor</h4>
+                                <p>Finance Director</p>
+                            </div>
+                        </div>
+                        <div class="roles-breakdown">
+                            <div class="role-item">
+                                <span class="role-name">Finance Managers</span>
+                                <span class="role-count">2</span>
+                            </div>
+                            <div class="role-item">
+                                <span class="role-name">Accountants</span>
+                                <span class="role-count">6</span>
+                            </div>
+                            <div class="role-item">
+                                <span class="role-name">Financial Analysts</span>
+                                <span class="role-count">4</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="department-card">
+                        <div class="department-header">
+                            <div class="department-name">Operations</div>
+                            <div class="member-count">22 Members</div>
+                        </div>
+                        <div class="department-head">
+                            <div class="head-avatar">JW</div>
+                            <div class="head-info">
+                                <h4>James Wilson</h4>
+                                <p>Operations Director</p>
+                            </div>
+                        </div>
+                        <div class="roles-breakdown">
+                            <div class="role-item">
+                                <span class="role-name">Operations Managers</span>
+                                <span class="role-count">4</span>
+                            </div>
+                            <div class="role-item">
+                                <span class="role-name">Operations Specialists</span>
+                                <span class="role-count">12</span>
+                            </div>
+                            <div class="role-item">
+                                <span class="role-name">Coordinators</span>
+                                <span class="role-count">6</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Navigation function
+        function navigateToPage(page) {
+            const pages = {
+                'dashboard': 'hr-dashboard.html',
+                'myinfo': 'my-info.html',
+                'people': 'people.html',
+                'hiring': 'hiring-onboarding.html',
+                'performance': 'performance.html',
+                'compensation': 'compensation.html',
+                'payroll': 'payroll.html',
+                'training': 'training.html',
+                'reports': 'reports.html',
+                'inbox': 'inbox.html'
+            };
+            
+            if (pages[page] && pages[page] !== '#') {
+                window.location.href = pages[page];
+            }
+        }
+
+        function showTab(tabName) {
+            // Hide all content sections
+            document.querySelectorAll('.content-section').forEach(section => {
+                section.classList.remove('active');
+            });
+
+            // Remove active class from all tabs
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            // Show selected section
+            document.getElementById(tabName).classList.add('active');
+
+            // Add active class to clicked tab
+            event.target.classList.add('active');
+        }
+
+        function viewEmployee(empId) {
+            alert('View employee profile: ' + empId);
+        }
+
+        function viewEmployeeProfile(empId) {
+            alert('View employee profile: ' + empId);
+        }
+    </script>
+</body>
+</html>

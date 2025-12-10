@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MI HR - Reports</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+            color: #333;
+            overflow-x: hidden;
+        }
+
+        /* Top Bar */
+        .top-bar {
+            background: white;
+            height: 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 30px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+        }
+
+        .app-title {
+            display: flex;
+            flex-direction: column;
+            cursor: pointer;
+        }
+
+        .app-title h1 {
+            font-size: 20px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .app-title span {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .top-bar-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .notification-icon {
+            position: relative;
+            cursor: pointer;
+            font-size: 20px;
+            color: #666;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        /* Main Container */
+        .container {
+            display: flex;
+            margin-top: 60px;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 250px;
+            background: #2c3e50;
+            color: white;
+            height: calc(100vh - 60px);
+            position: fixed;
+            left: 0;
+            overflow-y: auto;
+            padding-top: 20px;
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            padding: 15px 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .menu-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .menu-item.active {
+            background: #3498db;
+            color: white;
+        }
+
+        .menu-icon {
+            width: 24px;
+            height: 24px;
+            margin-right: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        .badge {
+            margin-left: auto;
+            background: #e74c3c;
+            color: white;
+            border-radius: 12px;
+            padding: 2px 8px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 250px;
+            padding: 30px;
+            width: calc(100% - 250px);
+        }
+
+        .page-header {
+            margin-bottom: 30px;
+        }
+
+        .page-header h2 {
+            font-size: 28px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .page-header p {
+            color: #666;
+            font-size: 14px;
+        }
+
+        /* Report Cards Grid */
+        .reports-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .report-card {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 25px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .report-card:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            border-color: #2196f3;
+            transform: translateY(-2px);
+        }
+
+        .report-icon {
+            font-size: 40px;
+            margin-bottom: 15px;
+        }
+
+        .report-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .report-description {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+
+        .report-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: #2196f3;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #1976d2;
+        }
+
+        .btn-secondary {
+            background: #f5f5f5;
+            color: #333;
+        }
+
+        .btn-secondary:hover {
+            background: #e0e0e0;
+        }
+
+        /* Report Details Section */
+        .section-card {
+            background: white;
+            border-radius: 8px;
+            padding: 25px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        /* Filters */
+        .filters {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+            padding: 20px;
+            background: #f5f5f5;
+            border-radius: 8px;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .filter-group label {
+            font-size: 13px;
+            font-weight: 500;
+            color: #666;
+            margin-bottom: 8px;
+        }
+
+        .filter-group input,
+        .filter-group select {
+            padding: 10px 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        /* Tables */
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: #f5f5f5;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        th {
+            font-weight: 600;
+            color: #666;
+            font-size: 13px;
+            text-transform: uppercase;
+        }
+
+        td {
+            font-size: 14px;
+            color: #333;
+        }
+
+        /* Summary Cards */
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .summary-card {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .summary-label {
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 8px;
+        }
+
+        .summary-value {
+            font-size: 28px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .summary-change {
+            font-size: 12px;
+            margin-top: 5px;
+        }
+
+        .summary-change.positive {
+            color: #4caf50;
+        }
+
+        .summary-change.negative {
+            color: #f44336;
+        }
+    </style>
+</head>
+<body>
+    <!-- Top Bar -->
+    <div class="top-bar">
+        <div class="app-title" onclick="navigateToPage('dashboard')">
+            <h1>MI HR</h1>
+            <span>Human Resources</span>
+        </div>
+        <div class="top-bar-right">
+            <div class="notification-icon">🔔</div>
+            <div class="user-avatar">HR</div>
+        </div>
+    </div>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="menu-item" onclick="navigateToPage('dashboard')">
+                <div class="menu-icon">🏠</div>
+                <span>HR Dashboard</span>
+            </div>
+            <div class="menu-item" onclick="navigateToPage('myinfo')">
+                <div class="menu-icon">👤</div>
+                <span>My Info</span>
+            </div>
+            <div class="menu-item" onclick="navigateToPage('people')">
+                <div class="menu-icon">👥</div>
+                <span>People</span>
+            </div>
+            <div class="menu-item" onclick="navigateToPage('hiring')">
+                <div class="menu-icon">➕</div>
+                <span>Hiring & Onboarding</span>
+            </div>
+            <div class="menu-item" onclick="navigateToPage('performance')">
+                <div class="menu-icon">🎯</div>
+                <span>Performance</span>
+            </div>
+            <div class="menu-item" onclick="navigateToPage('compensation')">
+                <div class="menu-icon">💰</div>
+                <span>Compensation</span>
+            </div>
+            <div class="menu-item" onclick="navigateToPage('payroll')">
+                <div class="menu-icon">📄</div>
+                <span>Payroll</span>
+            </div>
+            <div class="menu-item" onclick="navigateToPage('training')">
+                <div class="menu-icon">📚</div>
+                <span>Training</span>
+            </div>
+            <div class="menu-item active" onclick="navigateToPage('reports')">
+                <div class="menu-icon">📊</div>
+                <span>Reports</span>
+            </div>
+            <div class="menu-item" onclick="navigateToPage('inbox')">
+                <div class="menu-icon">✉️</div>
+                <span>Inbox</span>
+                <span class="badge">12</span>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="page-header">
+                <h2>Reports</h2>
+                <p>Generate and export comprehensive HR reports</p>
+            </div>
+
+            <!-- Reports Grid -->
+            <div class="reports-grid">
+                <div class="report-card" onclick="showReport('attendance')">
+                    <div class="report-icon">📅</div>
+                    <div class="report-title">Attendance Reports</div>
+                    <div class="report-description">View employee attendance, leave patterns, and time tracking data</div>
+                    <div class="report-actions">
+                        <button class="btn btn-primary" onclick="event.stopPropagation(); generateReport('attendance')">Generate</button>
+                        <button class="btn btn-secondary" onclick="event.stopPropagation(); exportReport('attendance')">Export</button>
+                    </div>
+                </div>
+
+                <div class="report-card" onclick="showReport('recruitment')">
+                    <div class="report-icon">👔</div>
+                    <div class="report-title">Recruitment Reports</div>
+                    <div class="report-description">Track hiring metrics, candidate pipeline, and time-to-fill statistics</div>
+                    <div class="report-actions">
+                        <button class="btn btn-primary" onclick="event.stopPropagation(); generateReport('recruitment')">Generate</button>
+                        <button class="btn btn-secondary" onclick="event.stopPropagation(); exportReport('recruitment')">Export</button>
+                    </div>
+                </div>
+
+                <div class="report-card" onclick="showReport('headcount')">
+                    <div class="report-icon">👥</div>
+                    <div class="report-title">Employee Headcount</div>
+                    <div class="report-description">Current employee count by department, location, and role</div>
+                    <div class="report-actions">
+                        <button class="btn btn-primary" onclick="event.stopPropagation(); generateReport('headcount')">Generate</button>
+                        <button class="btn btn-secondary" onclick="event.stopPropagation(); exportReport('headcount')">Export</button>
+                    </div>
+                </div>
+
+                <div class="report-card" onclick="showReport('attrition')">
+                    <div class="report-icon">📉</div>
+                    <div class="report-title">Attrition Reports</div>
+                    <div class="report-description">Analyze employee turnover, resignation trends, and retention metrics</div>
+                    <div class="report-actions">
+                        <button class="btn btn-primary" onclick="event.stopPropagation(); generateReport('attrition')">Generate</button>
+                        <button class="btn btn-secondary" onclick="event.stopPropagation(); exportReport('attrition')">Export</button>
+                    </div>
+                </div>
+
+                <div class="report-card" onclick="showReport('payroll')">
+                    <div class="report-icon">💰</div>
+                    <div class="report-title">Payroll Reports</div>
+                    <div class="report-description">Salary summaries, tax reports, and payroll cost analysis</div>
+                    <div class="report-actions">
+                        <button class="btn btn-primary" onclick="event.stopPropagation(); generateReport('payroll')">Generate</button>
+                        <button class="btn btn-secondary" onclick="event.stopPropagation(); exportReport('payroll')">Export</button>
+                    </div>
+                </div>
+
+                <div class="report-card" onclick="showReport('performance')">
+                    <div class="report-icon">🎯</div>
+                    <div class="report-title">Performance Reports</div>
+                    <div class="report-description">Review scores, goal completion, and performance trends</div>
+                    <div class="report-actions">
+                        <button class="btn btn-primary" onclick="event.stopPropagation(); generateReport('performance')">Generate</button>
+                        <button class="btn btn-secondary" onclick="event.stopPropagation(); exportReport('performance')">Export</button>
+                    </div>
+                </div>
+
+                <div class="report-card" onclick="showReport('training')">
+                    <div class="report-icon">📚</div>
+                    <div class="report-title">Training Reports</div>
+                    <div class="report-description">Course completion rates, training hours, and certification status</div>
+                    <div class="report-actions">
+                        <button class="btn btn-primary" onclick="event.stopPropagation(); generateReport('training')">Generate</button>
+                        <button class="btn btn-secondary" onclick="event.stopPropagation(); exportReport('training')">Export</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Report Details Section -->
+            <div id="reportDetails" style="display: none;">
+                <div class="section-card">
+                    <div class="section-title" id="reportDetailsTitle">Report Details</div>
+                    
+                    <!-- Filters -->
+                    <div class="filters">
+                        <div class="filter-group">
+                            <label>Start Date</label>
+                            <input type="date" id="startDate">
+                        </div>
+                        <div class="filter-group">
+                            <label>End Date</label>
+                            <input type="date" id="endDate">
+                        </div>
+                        <div class="filter-group">
+                            <label>Department</label>
+                            <select id="department">
+                                <option>All Departments</option>
+                                <option>Engineering</option>
+                                <option>Sales</option>
+                                <option>Marketing</option>
+                                <option>HR</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label>Location</label>
+                            <select id="location">
+                                <option>All Locations</option>
+                                <option>New York</option>
+                                <option>San Francisco</option>
+                                <option>London</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Summary Cards -->
+                    <div class="summary-grid" id="summaryCards">
+                        <!-- Summary cards will be populated dynamically -->
+                    </div>
+
+                    <!-- Report Table -->
+                    <div class="table-container">
+                        <table id="reportTable">
+                            <!-- Table will be populated dynamically -->
+                        </table>
+                    </div>
+
+                    <div style="margin-top: 20px; display: flex; gap: 10px;">
+                        <button class="btn btn-primary" onclick="exportToExcel()">📊 Export to Excel</button>
+                        <button class="btn btn-primary" onclick="exportToPDF()">📄 Export to PDF</button>
+                        <button class="btn btn-secondary" onclick="closeReport()">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function navigateToPage(page) {
+            const pages = {
+                'dashboard': 'hr-dashboard.html',
+                'myinfo': 'my-info.html',
+                'people': 'people.html',
+                'hiring': 'hiring-onboarding.html',
+                'performance': 'performance.html',
+                'compensation': 'compensation.html',
+                'payroll': 'payroll.html',
+                'training': 'training.html',
+                'reports': 'reports.html',
+                'inbox': 'inbox.html'
+            };
+            
+            if (pages[page] && pages[page] !== '#') {
+                window.location.href = pages[page];
+            }
+        }
+
+        function showReport(reportType) {
+            document.getElementById('reportDetails').style.display = 'block';
+            const titles = {
+                'attendance': 'Attendance Report',
+                'recruitment': 'Recruitment Report',
+                'headcount': 'Employee Headcount Report',
+                'attrition': 'Attrition Report',
+                'payroll': 'Payroll Report',
+                'performance': 'Performance Report',
+                'training': 'Training Report'
+            };
+            document.getElementById('reportDetailsTitle').textContent = titles[reportType] || 'Report';
+            
+            // Populate summary cards and table based on report type
+            populateReport(reportType);
+            
+            // Scroll to report details
+            document.getElementById('reportDetails').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function populateReport(reportType) {
+            const summaryCards = document.getElementById('summaryCards');
+            const reportTable = document.getElementById('reportTable');
+            
+            // Sample data for different report types
+            const reportData = {
+                'attendance': {
+                    summary: [
+                        { label: 'Total Employees', value: '248' },
+                        { label: 'Average Attendance', value: '95.2%', change: '+2.1%' },
+                        { label: 'On Leave Today', value: '6' },
+                        { label: 'Absent Today', value: '2' }
+                    ],
+                    headers: ['Employee', 'Department', 'Present Days', 'Leave Days', 'Absent Days', 'Attendance %'],
+                    rows: [
+                        ['John Doe', 'Engineering', '20', '2', '0', '95.5%'],
+                        ['Sarah Johnson', 'Engineering', '22', '0', '0', '100%'],
+                        ['Michael Chen', 'Engineering', '21', '1', '0', '97.7%']
+                    ]
+                },
+                'recruitment': {
+                    summary: [
+                        { label: 'Open Positions', value: '12' },
+                        { label: 'Candidates', value: '45', change: '+8' },
+                        { label: 'Interviews', value: '28' },
+                        { label: 'Offers Sent', value: '5' }
+                    ],
+                    headers: ['Position', 'Department', 'Candidates', 'Interviews', 'Offers', 'Status'],
+                    rows: [
+                        ['Senior Software Engineer', 'Engineering', '15', '8', '2', 'Active'],
+                        ['Sales Manager', 'Sales', '10', '5', '1', 'Active'],
+                        ['Marketing Specialist', 'Marketing', '8', '4', '1', 'Active']
+                    ]
+                },
+                'headcount': {
+                    summary: [
+                        { label: 'Total Employees', value: '248', change: '+5' },
+                        { label: 'Active', value: '242' },
+                        { label: 'On Leave', value: '6' },
+                        { label: 'Departments', value: '8' }
+                    ],
+                    headers: ['Department', 'Head Count', 'Active', 'On Leave', 'New Hires'],
+                    rows: [
+                        ['Engineering', '42', '41', '1', '3'],
+                        ['Sales', '28', '27', '1', '2'],
+                        ['Marketing', '18', '18', '0', '1'],
+                        ['HR', '15', '15', '0', '0']
+                    ]
+                },
+                'attrition': {
+                    summary: [
+                        { label: 'Attrition Rate', value: '8.2%', change: '-1.3%' },
+                        { label: 'Resignations (YTD)', value: '20' },
+                        { label: 'Voluntary', value: '15' },
+                        { label: 'Involuntary', value: '5' }
+                    ],
+                    headers: ['Employee', 'Department', 'Last Day', 'Reason', 'Type'],
+                    rows: [
+                        ['Robert Taylor', 'Engineering', 'Dec 31, 2024', 'Better Opportunity', 'Voluntary'],
+                        ['Jane Smith', 'Sales', 'Dec 15, 2024', 'Relocation', 'Voluntary'],
+                        ['Mike Johnson', 'Marketing', 'Nov 30, 2024', 'Performance', 'Involuntary']
+                    ]
+                },
+                'payroll': {
+                    summary: [
+                        { label: 'Total Gross', value: '$1,245,000' },
+                        { label: 'Total Deductions', value: '$348,600' },
+                        { label: 'Net Pay', value: '$896,400' },
+                        { label: 'Employees', value: '248' }
+                    ],
+                    headers: ['Employee', 'Department', 'Gross Salary', 'Deductions', 'Net Pay'],
+                    rows: [
+                        ['John Doe', 'Engineering', '$8,333', '$2,333', '$6,000'],
+                        ['Sarah Johnson', 'Engineering', '$9,167', '$2,567', '$6,600'],
+                        ['Michael Chen', 'Engineering', '$12,500', '$3,500', '$9,000']
+                    ]
+                },
+                'performance': {
+                    summary: [
+                        { label: 'Avg Rating', value: '4.2/5.0' },
+                        { label: 'Reviews Completed', value: '180/248' },
+                        { label: 'Goals Completed', value: '85%' },
+                        { label: 'Top Performers', value: '42' }
+                    ],
+                    headers: ['Employee', 'Department', 'Rating', 'Goals Completed', 'Status'],
+                    rows: [
+                        ['John Doe', 'Engineering', '4.3', '3/4', 'Completed'],
+                        ['Sarah Johnson', 'Engineering', '4.5', '4/4', 'Completed'],
+                        ['Michael Chen', 'Engineering', '4.4', '3/3', 'Completed']
+                    ]
+                },
+                'training': {
+                    summary: [
+                        { label: 'Courses', value: '25' },
+                        { label: 'Completions', value: '180' },
+                        { label: 'In Progress', value: '45' },
+                        { label: 'Certificates', value: '120' }
+                    ],
+                    headers: ['Course', 'Assigned', 'Completed', 'In Progress', 'Completion Rate'],
+                    rows: [
+                        ['Compliance Training', '248', '240', '8', '96.8%'],
+                        ['Data Security', '120', '95', '25', '79.2%'],
+                        ['Leadership Skills', '45', '30', '15', '66.7%']
+                    ]
+                }
+            };
+
+            const data = reportData[reportType] || reportData['attendance'];
+            
+            // Populate summary cards
+            summaryCards.innerHTML = data.summary.map(item => `
+                <div class="summary-card">
+                    <div class="summary-label">${item.label}</div>
+                    <div class="summary-value">${item.value}</div>
+                    ${item.change ? `<div class="summary-change ${item.change.startsWith('+') ? 'positive' : 'negative'}">${item.change}</div>` : ''}
+                </div>
+            `).join('');
+
+            // Populate table
+            reportTable.innerHTML = `
+                <thead>
+                    <tr>
+                        ${data.headers.map(h => `<th>${h}</th>`).join('')}
+                    </tr>
+                </thead>
+                <tbody>
+                    ${data.rows.map(row => `
+                        <tr>
+                            ${row.map(cell => `<td>${cell}</td>`).join('')}
+                        </tr>
+                    `).join('')}
+                </tbody>
+            `;
+        }
+
+        function generateReport(reportType) {
+            showReport(reportType);
+        }
+
+        function exportReport(reportType) {
+            alert('Exporting ' + reportType + ' report...');
+        }
+
+        function exportToExcel() {
+            alert('Exporting to Excel...');
+        }
+
+        function exportToPDF() {
+            alert('Exporting to PDF...');
+        }
+
+        function closeReport() {
+            document.getElementById('reportDetails').style.display = 'none';
+        }
+    </script>
+</body>
+</html>
+

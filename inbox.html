@@ -1,0 +1,868 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MI HR - Inbox</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+            color: #333;
+            overflow-x: hidden;
+        }
+
+        /* Top Bar */
+        .top-bar {
+            background: white;
+            height: 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 30px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+        }
+
+        .app-title {
+            display: flex;
+            flex-direction: column;
+            cursor: pointer;
+        }
+
+        .app-title h1 {
+            font-size: 20px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .app-title span {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .top-bar-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .notification-icon {
+            position: relative;
+            cursor: pointer;
+            font-size: 20px;
+            color: #666;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        /* Main Container */
+        .container {
+            display: flex;
+            margin-top: 60px;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 250px;
+            background: #2c3e50;
+            color: white;
+            height: calc(100vh - 60px);
+            position: fixed;
+            left: 0;
+            overflow-y: auto;
+            padding-top: 20px;
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            padding: 15px 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .menu-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .menu-item.active {
+            background: #3498db;
+            color: white;
+        }
+
+        .menu-icon {
+            width: 24px;
+            height: 24px;
+            margin-right: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        .badge {
+            margin-left: auto;
+            background: #e74c3c;
+            color: white;
+            border-radius: 12px;
+            padding: 2px 8px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 250px;
+            padding: 30px;
+            width: calc(100% - 250px);
+        }
+
+        .page-header {
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .page-header h2 {
+            font-size: 28px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .page-header p {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .unread-count {
+            background: #e74c3c;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        /* Filters */
+        .filters {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 8px 16px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            background: white;
+            color: #666;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .filter-btn:hover {
+            border-color: #2196f3;
+            color: #2196f3;
+        }
+
+        .filter-btn.active {
+            background: #2196f3;
+            color: white;
+            border-color: #2196f3;
+        }
+
+        /* Request Cards */
+        .requests-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .request-card {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 20px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .request-card:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            border-color: #2196f3;
+        }
+
+        .request-card.unread {
+            border-left: 4px solid #2196f3;
+            background: #f8f9ff;
+        }
+
+        .request-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 15px;
+        }
+
+        .request-info {
+            flex: 1;
+        }
+
+        .request-type {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .request-type.leave {
+            background: #fff9e6;
+            color: #ff9800;
+        }
+
+        .request-type.hiring {
+            background: #e3f2fd;
+            color: #2196f3;
+        }
+
+        .request-type.offer {
+            background: #e8f5e9;
+            color: #4caf50;
+        }
+
+        .request-type.document {
+            background: #f3e5f5;
+            color: #9c27b0;
+        }
+
+        .request-type.performance {
+            background: #fff3e0;
+            color: #ff6f00;
+        }
+
+        .request-type.training {
+            background: #e0f2f1;
+            color: #00796b;
+        }
+
+        .request-type.system {
+            background: #f5f5f5;
+            color: #666;
+        }
+
+        .request-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .request-subtitle {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .request-details {
+            font-size: 13px;
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .request-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+            color: #999;
+            margin-bottom: 15px;
+        }
+
+        .request-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-approve {
+            background: #4caf50;
+            color: white;
+        }
+
+        .btn-approve:hover {
+            background: #45a049;
+        }
+
+        .btn-reject {
+            background: #f44336;
+            color: white;
+        }
+
+        .btn-reject:hover {
+            background: #da190b;
+        }
+
+        .btn-view {
+            background: #2196f3;
+            color: white;
+        }
+
+        .btn-view:hover {
+            background: #1976d2;
+        }
+
+        .btn-secondary {
+            background: #f5f5f5;
+            color: #333;
+        }
+
+        .btn-secondary:hover {
+            background: #e0e0e0;
+        }
+
+        .request-status {
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .status-pending {
+            background: #fff9e6;
+            color: #ff9800;
+        }
+
+        .status-approved {
+            background: #e8f5e9;
+            color: #4caf50;
+        }
+
+        .status-rejected {
+            background: #ffebee;
+            color: #f44336;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+        }
+
+        .empty-state-icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Top Bar -->
+    <div class="top-bar">
+        <div class="app-title" onclick="navigateToPage('dashboard')">
+            <h1>MI HR</h1>
+            <span>Human Resources</span>
+        </div>
+        <div class="top-bar-right">
+            <div class="notification-icon">🔔</div>
+            <div class="user-avatar">HR</div>
+        </div>
+    </div>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="menu-item" onclick="navigateToPage('dashboard')">
+                <div class="menu-icon">🏠</div>
+                <span>HR Dashboard</span>
+            </div>
+            <div class="menu-item" onclick="navigateToPage('myinfo')">
+                <div class="menu-icon">👤</div>
+                <span>My Info</span>
+            </div>
+            <div class="menu-item" onclick="navigateToPage('people')">
+                <div class="menu-icon">👥</div>
+                <span>People</span>
+            </div>
+            <div class="menu-item" onclick="navigateToPage('hiring')">
+                <div class="menu-icon">➕</div>
+                <span>Hiring & Onboarding</span>
+            </div>
+            <div class="menu-item" onclick="navigateToPage('performance')">
+                <div class="menu-icon">🎯</div>
+                <span>Performance</span>
+            </div>
+            <div class="menu-item" onclick="navigateToPage('compensation')">
+                <div class="menu-icon">💰</div>
+                <span>Compensation</span>
+            </div>
+            <div class="menu-item" onclick="navigateToPage('payroll')">
+                <div class="menu-icon">📄</div>
+                <span>Payroll</span>
+            </div>
+            <div class="menu-item" onclick="navigateToPage('training')">
+                <div class="menu-icon">📚</div>
+                <span>Training</span>
+            </div>
+            <div class="menu-item" onclick="navigateToPage('reports')">
+                <div class="menu-icon">📊</div>
+                <span>Reports</span>
+            </div>
+            <div class="menu-item active" onclick="navigateToPage('inbox')">
+                <div class="menu-icon">✉️</div>
+                <span>Inbox</span>
+                <span class="badge">12</span>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="page-header">
+                <div>
+                    <h2>Inbox</h2>
+                    <p>Review and respond to pending requests and approvals</p>
+                </div>
+                <div class="unread-count">12 Unread</div>
+            </div>
+
+            <!-- Filters -->
+            <div class="filters">
+                <button class="filter-btn active" onclick="filterRequests('all')">All Requests</button>
+                <button class="filter-btn" onclick="filterRequests('leave')">Leave Approvals</button>
+                <button class="filter-btn" onclick="filterRequests('hiring')">New Hire Approvals</button>
+                <button class="filter-btn" onclick="filterRequests('offer')">Offer Approvals</button>
+                <button class="filter-btn" onclick="filterRequests('document')">Document Reviews</button>
+                <button class="filter-btn" onclick="filterRequests('performance')">Performance Reviews</button>
+                <button class="filter-btn" onclick="filterRequests('training')">Training Assignments</button>
+                <button class="filter-btn" onclick="filterRequests('system')">System Notifications</button>
+            </div>
+
+            <!-- Requests Container -->
+            <div class="requests-container" id="requestsContainer">
+                <!-- Leave Approval Request -->
+                <div class="request-card unread" data-type="leave">
+                    <div class="request-header">
+                        <div class="request-info">
+                            <span class="request-type leave">Leave Approval</span>
+                            <div class="request-title">Annual Leave Request - John Doe</div>
+                            <div class="request-subtitle">Software Engineer | Engineering Department</div>
+                        </div>
+                        <span class="request-status status-pending">Pending</span>
+                    </div>
+                    <div class="request-details">
+                        <strong>Leave Details:</strong><br>
+                        Type: Annual Leave<br>
+                        Start Date: December 20, 2024<br>
+                        End Date: December 25, 2024<br>
+                        Duration: 5 days<br>
+                        Reason: Family vacation
+                    </div>
+                    <div class="request-meta">
+                        <span>📅 Submitted: Dec 10, 2024 at 2:30 PM</span>
+                        <span>⏱️ 2 days ago</span>
+                    </div>
+                    <div class="request-actions">
+                        <button class="btn btn-approve" onclick="approveRequest('leave1')">✓ Approve</button>
+                        <button class="btn btn-reject" onclick="rejectRequest('leave1')">✗ Reject</button>
+                        <button class="btn btn-view" onclick="viewRequest('leave1')">View Details</button>
+                    </div>
+                </div>
+
+                <!-- Leave Approval Request 2 -->
+                <div class="request-card unread" data-type="leave">
+                    <div class="request-header">
+                        <div class="request-info">
+                            <span class="request-type leave">Leave Approval</span>
+                            <div class="request-title">Sick Leave Request - Sarah Johnson</div>
+                            <div class="request-subtitle">Engineering Manager | Engineering Department</div>
+                        </div>
+                        <span class="request-status status-pending">Pending</span>
+                    </div>
+                    <div class="request-details">
+                        <strong>Leave Details:</strong><br>
+                        Type: Sick Leave<br>
+                        Date: December 12, 2024<br>
+                        Duration: 1 day<br>
+                        Reason: Medical appointment
+                    </div>
+                    <div class="request-meta">
+                        <span>📅 Submitted: Dec 11, 2024 at 9:15 AM</span>
+                        <span>⏱️ 1 day ago</span>
+                    </div>
+                    <div class="request-actions">
+                        <button class="btn btn-approve" onclick="approveRequest('leave2')">✓ Approve</button>
+                        <button class="btn btn-reject" onclick="rejectRequest('leave2')">✗ Reject</button>
+                        <button class="btn btn-view" onclick="viewRequest('leave2')">View Details</button>
+                    </div>
+                </div>
+
+                <!-- New Hire Approval -->
+                <div class="request-card unread" data-type="hiring">
+                    <div class="request-header">
+                        <div class="request-info">
+                            <span class="request-type hiring">New Hire Approval</span>
+                            <div class="request-title">Job Requisition Approval - Senior Software Engineer</div>
+                            <div class="request-subtitle">Engineering Department | Budget: $120,000</div>
+                        </div>
+                        <span class="request-status status-pending">Pending</span>
+                    </div>
+                    <div class="request-details">
+                        <strong>Requisition Details:</strong><br>
+                        Position: Senior Software Engineer<br>
+                        Department: Engineering<br>
+                        Requested By: Michael Chen<br>
+                        Number of Positions: 2<br>
+                        Budget: $120,000 per position
+                    </div>
+                    <div class="request-meta">
+                        <span>📅 Submitted: Dec 8, 2024 at 10:00 AM</span>
+                        <span>⏱️ 4 days ago</span>
+                    </div>
+                    <div class="request-actions">
+                        <button class="btn btn-approve" onclick="approveRequest('hiring1')">✓ Approve</button>
+                        <button class="btn btn-reject" onclick="rejectRequest('hiring1')">✗ Reject</button>
+                        <button class="btn btn-view" onclick="viewRequest('hiring1')">View Details</button>
+                    </div>
+                </div>
+
+                <!-- Offer Approval -->
+                <div class="request-card unread" data-type="offer">
+                    <div class="request-header">
+                        <div class="request-info">
+                            <span class="request-type offer">Offer Approval</span>
+                            <div class="request-title">Job Offer - David Wilson</div>
+                            <div class="request-subtitle">Senior Software Engineer | Salary: $120,000</div>
+                        </div>
+                        <span class="request-status status-pending">Pending</span>
+                    </div>
+                    <div class="request-details">
+                        <strong>Offer Details:</strong><br>
+                        Candidate: David Wilson<br>
+                        Position: Senior Software Engineer<br>
+                        Salary: $120,000<br>
+                        Start Date: January 2, 2025<br>
+                        Offer Type: Full-time Permanent
+                    </div>
+                    <div class="request-meta">
+                        <span>📅 Submitted: Dec 9, 2024 at 3:45 PM</span>
+                        <span>⏱️ 3 days ago</span>
+                    </div>
+                    <div class="request-actions">
+                        <button class="btn btn-approve" onclick="approveRequest('offer1')">✓ Approve</button>
+                        <button class="btn btn-reject" onclick="rejectRequest('offer1')">✗ Reject</button>
+                        <button class="btn btn-view" onclick="viewRequest('offer1')">View Details</button>
+                    </div>
+                </div>
+
+                <!-- Document Review Request -->
+                <div class="request-card unread" data-type="document">
+                    <div class="request-header">
+                        <div class="request-info">
+                            <span class="request-type document">Document Review</span>
+                            <div class="request-title">Contract Review - Sarah Johnson</div>
+                            <div class="request-subtitle">Employment Contract | Expiring: Dec 31, 2024</div>
+                        </div>
+                        <span class="request-status status-pending">Pending</span>
+                    </div>
+                    <div class="request-details">
+                        <strong>Document Details:</strong><br>
+                        Document Type: Employment Contract<br>
+                        Employee: Sarah Johnson<br>
+                        Expiry Date: December 31, 2024<br>
+                        Action Required: Review and renewal
+                    </div>
+                    <div class="request-meta">
+                        <span>📅 Submitted: Dec 5, 2024 at 11:20 AM</span>
+                        <span>⏱️ 7 days ago</span>
+                    </div>
+                    <div class="request-actions">
+                        <button class="btn btn-approve" onclick="approveRequest('doc1')">✓ Approve</button>
+                        <button class="btn btn-reject" onclick="rejectRequest('doc1')">✗ Reject</button>
+                        <button class="btn btn-view" onclick="viewRequest('doc1')">View Document</button>
+                    </div>
+                </div>
+
+                <!-- Performance Review Notification -->
+                <div class="request-card" data-type="performance">
+                    <div class="request-header">
+                        <div class="request-info">
+                            <span class="request-type performance">Performance Review</span>
+                            <div class="request-title">Q4 Performance Review - John Doe</div>
+                            <div class="request-subtitle">Self Review Pending | Due: Dec 15, 2024</div>
+                        </div>
+                        <span class="request-status status-pending">Pending</span>
+                    </div>
+                    <div class="request-details">
+                        <strong>Review Details:</strong><br>
+                        Employee: John Doe<br>
+                        Review Period: Q4 2024<br>
+                        Review Type: Self Review<br>
+                        Due Date: December 15, 2024<br>
+                        Status: Not Started
+                    </div>
+                    <div class="request-meta">
+                        <span>📅 Assigned: Dec 1, 2024</span>
+                        <span>⏱️ 11 days ago</span>
+                    </div>
+                    <div class="request-actions">
+                        <button class="btn btn-view" onclick="viewRequest('perf1')">View Review</button>
+                        <button class="btn btn-secondary" onclick="remindEmployee('perf1')">Send Reminder</button>
+                    </div>
+                </div>
+
+                <!-- Training Assignment Alert -->
+                <div class="request-card" data-type="training">
+                    <div class="request-header">
+                        <div class="request-info">
+                            <span class="request-type training">Training Assignment</span>
+                            <div class="request-title">Compliance Training - All Employees</div>
+                            <div class="request-subtitle">Mandatory Training | Due: Dec 31, 2024</div>
+                        </div>
+                        <span class="request-status status-pending">In Progress</span>
+                    </div>
+                    <div class="request-details">
+                        <strong>Training Details:</strong><br>
+                        Course: Compliance Training<br>
+                        Assigned To: All Employees (248)<br>
+                        Completion Rate: 89%<br>
+                        Remaining: 27 employees<br>
+                        Due Date: December 31, 2024
+                    </div>
+                    <div class="request-meta">
+                        <span>📅 Assigned: Nov 1, 2024</span>
+                        <span>⏱️ 40 days ago</span>
+                    </div>
+                    <div class="request-actions">
+                        <button class="btn btn-view" onclick="viewRequest('training1')">View Progress</button>
+                        <button class="btn btn-secondary" onclick="sendReminder('training1')">Send Reminder</button>
+                    </div>
+                </div>
+
+                <!-- System Notification -->
+                <div class="request-card" data-type="system">
+                    <div class="request-header">
+                        <div class="request-info">
+                            <span class="request-type system">System Notification</span>
+                            <div class="request-title">5 Documents Expiring Soon</div>
+                            <div class="request-subtitle">Action Required | Next 7 Days</div>
+                        </div>
+                    </div>
+                    <div class="request-details">
+                        <strong>Expiring Documents:</strong><br>
+                        • John Doe - Work Permit (Dec 18, 2024)<br>
+                        • Sarah Johnson - Contract (Dec 20, 2024)<br>
+                        • Michael Chen - ID Card (Dec 22, 2024)<br>
+                        • Emily Rodriguez - License (Dec 19, 2024)<br>
+                        • David Kim - Passport (Dec 21, 2024)
+                    </div>
+                    <div class="request-meta">
+                        <span>📅 Generated: Dec 10, 2024 at 8:00 AM</span>
+                        <span>⏱️ 2 days ago</span>
+                    </div>
+                    <div class="request-actions">
+                        <button class="btn btn-view" onclick="viewRequest('system1')">View All Documents</button>
+                        <button class="btn btn-secondary" onclick="dismissNotification('system1')">Dismiss</button>
+                    </div>
+                </div>
+
+                <!-- Approved Request (Example) -->
+                <div class="request-card" data-type="leave">
+                    <div class="request-header">
+                        <div class="request-info">
+                            <span class="request-type leave">Leave Approval</span>
+                            <div class="request-title">Personal Leave Request - Michael Chen</div>
+                            <div class="request-subtitle">Director of Engineering | Engineering Department</div>
+                        </div>
+                        <span class="request-status status-approved">Approved</span>
+                    </div>
+                    <div class="request-details">
+                        <strong>Leave Details:</strong><br>
+                        Type: Personal Leave<br>
+                        Date: December 8, 2024<br>
+                        Duration: 1 day<br>
+                        Reason: Personal matters
+                    </div>
+                    <div class="request-meta">
+                        <span>📅 Approved: Dec 7, 2024 at 4:20 PM</span>
+                        <span>⏱️ 5 days ago</span>
+                    </div>
+                    <div class="request-actions">
+                        <button class="btn btn-view" onclick="viewRequest('leave3')">View Details</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function navigateToPage(page) {
+            const pages = {
+                'dashboard': 'hr-dashboard.html',
+                'myinfo': 'my-info.html',
+                'people': 'people.html',
+                'hiring': 'hiring-onboarding.html',
+                'performance': 'performance.html',
+                'compensation': 'compensation.html',
+                'payroll': 'payroll.html',
+                'training': 'training.html',
+                'reports': 'reports.html',
+                'inbox': 'inbox.html'
+            };
+            
+            if (pages[page] && pages[page] !== '#') {
+                window.location.href = pages[page];
+            }
+        }
+
+        function filterRequests(type) {
+            // Update active filter button
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+
+            // Filter request cards
+            const cards = document.querySelectorAll('.request-card');
+            cards.forEach(card => {
+                if (type === 'all') {
+                    card.style.display = 'block';
+                } else {
+                    if (card.dataset.type === type) {
+                        card.style.display = 'block';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                }
+            });
+        }
+
+        function approveRequest(requestId) {
+            if (confirm('Are you sure you want to approve this request?')) {
+                const card = event.target.closest('.request-card');
+                const statusBadge = card.querySelector('.request-status');
+                const actions = card.querySelector('.request-actions');
+                
+                statusBadge.textContent = 'Approved';
+                statusBadge.className = 'request-status status-approved';
+                card.classList.remove('unread');
+                
+                // Update actions
+                actions.innerHTML = `
+                    <button class="btn btn-view" onclick="viewRequest('${requestId}')">View Details</button>
+                `;
+                
+                // Update unread count
+                updateUnreadCount();
+                
+                alert('Request approved successfully!');
+            }
+        }
+
+        function rejectRequest(requestId) {
+            const reason = prompt('Please provide a reason for rejection:');
+            if (reason) {
+                const card = event.target.closest('.request-card');
+                const statusBadge = card.querySelector('.request-status');
+                const actions = card.querySelector('.request-actions');
+                
+                statusBadge.textContent = 'Rejected';
+                statusBadge.className = 'request-status status-rejected';
+                card.classList.remove('unread');
+                
+                // Update actions
+                actions.innerHTML = `
+                    <button class="btn btn-view" onclick="viewRequest('${requestId}')">View Details</button>
+                `;
+                
+                // Update unread count
+                updateUnreadCount();
+                
+                alert('Request rejected. Reason: ' + reason);
+            }
+        }
+
+        function viewRequest(requestId) {
+            alert('Viewing request details: ' + requestId);
+            // In a real application, this would open a modal or navigate to a detail page
+        }
+
+        function remindEmployee(requestId) {
+            if (confirm('Send reminder to employee?')) {
+                alert('Reminder sent successfully!');
+            }
+        }
+
+        function sendReminder(requestId) {
+            if (confirm('Send reminder to all pending employees?')) {
+                alert('Reminders sent successfully!');
+            }
+        }
+
+        function dismissNotification(notificationId) {
+            const card = event.target.closest('.request-card');
+            card.style.display = 'none';
+            updateUnreadCount();
+        }
+
+        function updateUnreadCount() {
+            const unreadCards = document.querySelectorAll('.request-card.unread');
+            const unreadCount = unreadCards.length;
+            const badge = document.querySelector('.unread-count');
+            const sidebarBadge = document.querySelector('.menu-item.active .badge');
+            
+            if (badge) {
+                badge.textContent = unreadCount + ' Unread';
+            }
+            
+            if (sidebarBadge) {
+                sidebarBadge.textContent = unreadCount;
+                if (unreadCount === 0) {
+                    sidebarBadge.style.display = 'none';
+                }
+            }
+        }
+
+        // Initialize unread count
+        updateUnreadCount();
+    </script>
+</body>
+</html>

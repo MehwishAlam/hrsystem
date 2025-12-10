@@ -1,0 +1,916 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MI HR - Compensation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+            color: #333;
+            overflow-x: hidden;
+        }
+
+        /* Top Bar */
+        .top-bar {
+            background: white;
+            height: 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 30px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+        }
+
+        .app-title {
+            display: flex;
+            flex-direction: column;
+            cursor: pointer;
+        }
+
+        .app-title h1 {
+            font-size: 20px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .app-title span {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .top-bar-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .notification-icon {
+            position: relative;
+            cursor: pointer;
+            font-size: 20px;
+            color: #666;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        /* Main Container */
+        .container {
+            display: flex;
+            margin-top: 60px;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 250px;
+            background: #2c3e50;
+            color: white;
+            height: calc(100vh - 60px);
+            position: fixed;
+            left: 0;
+            overflow-y: auto;
+            padding-top: 20px;
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            padding: 15px 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .menu-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .menu-item.active {
+            background: #3498db;
+            color: white;
+        }
+
+        .menu-icon {
+            width: 24px;
+            height: 24px;
+            margin-right: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        .badge {
+            margin-left: auto;
+            background: #e74c3c;
+            color: white;
+            border-radius: 12px;
+            padding: 2px 8px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 250px;
+            padding: 30px;
+            width: calc(100% - 250px);
+        }
+
+        .page-header {
+            margin-bottom: 30px;
+        }
+
+        .page-header h2 {
+            font-size: 28px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .page-header p {
+            color: #666;
+            font-size: 14px;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #e0e0e0;
+            flex-wrap: wrap;
+        }
+
+        .tab {
+            padding: 12px 20px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            color: #666;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+            position: relative;
+            top: 2px;
+        }
+
+        .tab:hover {
+            color: #2196f3;
+        }
+
+        .tab.active {
+            color: #2196f3;
+            border-bottom-color: #2196f3;
+        }
+
+        /* Content Sections */
+        .content-section {
+            display: none;
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        .section-card {
+            background: white;
+            border-radius: 8px;
+            padding: 25px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        /* Forms */
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            font-size: 13px;
+            font-weight: 500;
+            color: #666;
+            margin-bottom: 8px;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            padding: 10px 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #2196f3;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: #2196f3;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #1976d2;
+        }
+
+        .btn-secondary {
+            background: #f5f5f5;
+            color: #333;
+        }
+
+        /* Tables */
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: #f5f5f5;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        th {
+            font-weight: 600;
+            color: #666;
+            font-size: 13px;
+            text-transform: uppercase;
+        }
+
+        td {
+            font-size: 14px;
+            color: #333;
+        }
+
+        /* Salary Structure */
+        .structure-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .structure-card {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 20px;
+        }
+
+        .structure-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .structure-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .structure-item:last-child {
+            border-bottom: none;
+        }
+
+        .structure-label {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .structure-value {
+            color: #333;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        /* Pay Grades */
+        .grade-card {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 15px;
+        }
+
+        .grade-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .grade-name {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .grade-range {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .grade-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+        }
+
+        .grade-detail-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .grade-detail-label {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .grade-detail-value {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        /* History Timeline */
+        .history-item {
+            display: flex;
+            padding: 20px 0;
+            border-left: 2px solid #e0e0e0;
+            padding-left: 20px;
+            position: relative;
+            margin-left: 20px;
+        }
+
+        .history-item:before {
+            content: '';
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #2196f3;
+            position: absolute;
+            left: -7px;
+            top: 20px;
+        }
+
+        .history-item:last-child {
+            border-left: none;
+        }
+
+        .history-date {
+            min-width: 120px;
+            font-size: 13px;
+            color: #666;
+            margin-right: 20px;
+        }
+
+        .history-content {
+            flex: 1;
+        }
+
+        .history-title {
+            font-weight: 600;
+            font-size: 14px;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .history-details {
+            font-size: 13px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <!-- Top Bar -->
+    <div class="top-bar">
+        <div class="app-title" onclick="navigateToPage('dashboard')">
+            <h1>MI HR</h1>
+            <span>Human Resources</span>
+        </div>
+        <div class="top-bar-right">
+            <div class="notification-icon">🔔</div>
+            <div class="user-avatar">HR</div>
+        </div>
+    </div>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="menu-item" onclick="navigateToPage('dashboard')">
+                <div class="menu-icon">🏠</div>
+                <span>HR Dashboard</span>
+            </div>
+            <div class="menu-item" onclick="navigateToPage('myinfo')">
+                <div class="menu-icon">👤</div>
+                <span>My Info</span>
+            </div>
+            <div class="menu-item" onclick="navigateToPage('people')">
+                <div class="menu-icon">👥</div>
+                <span>People</span>
+            </div>
+            <div class="menu-item" onclick="navigateToPage('hiring')">
+                <div class="menu-icon">➕</div>
+                <span>Hiring & Onboarding</span>
+            </div>
+            <div class="menu-item" onclick="navigateToPage('performance')">
+                <div class="menu-icon">🎯</div>
+                <span>Performance</span>
+            </div>
+            <div class="menu-item active" onclick="navigateToPage('compensation')">
+                <div class="menu-icon">💰</div>
+                <span>Compensation</span>
+            </div>
+            <div class="menu-item" onclick="navigateToPage('payroll')">
+                <div class="menu-icon">📄</div>
+                <span>Payroll</span>
+            </div>
+            <div class="menu-item" onclick="navigateToPage('training')">
+                <div class="menu-icon">📚</div>
+                <span>Training</span>
+            </div>
+            <div class="menu-item" onclick="navigateToPage('reports')">
+                <div class="menu-icon">📊</div>
+                <span>Reports</span>
+            </div>
+            <div class="menu-item" onclick="navigateToPage('inbox')">
+                <div class="menu-icon">✉️</div>
+                <span>Inbox</span>
+                <span class="badge">12</span>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="page-header">
+                <h2>Compensation</h2>
+                <p>Manage salary structures, pay grades, bonuses, and compensation history</p>
+            </div>
+
+            <!-- Tabs -->
+            <div class="tabs">
+                <div class="tab active" onclick="showTab('structure')">Salary Structure</div>
+                <div class="tab" onclick="showTab('grades')">Pay Grades & Bands</div>
+                <div class="tab" onclick="showTab('bonuses')">Bonuses & Incentives</div>
+                <div class="tab" onclick="showTab('history')">Compensation History</div>
+            </div>
+
+            <!-- Salary Structure -->
+            <div id="structure" class="content-section active">
+                <div class="section-card">
+                    <div class="section-title">Employee Salary Structure</div>
+                    <div style="margin-bottom: 20px;">
+                        <select style="padding: 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px;">
+                            <option>Select Employee</option>
+                            <option>John Doe</option>
+                            <option>Sarah Johnson</option>
+                            <option>Michael Chen</option>
+                        </select>
+                    </div>
+                    <div class="structure-grid">
+                        <div class="structure-card">
+                            <div class="structure-title">Basic Salary</div>
+                            <div class="structure-item">
+                                <span class="structure-label">Base Amount</span>
+                                <span class="structure-value">$100,000</span>
+                            </div>
+                            <div class="structure-item">
+                                <span class="structure-label">Annual</span>
+                                <span class="structure-value">$100,000</span>
+                            </div>
+                            <div class="structure-item">
+                                <span class="structure-label">Monthly</span>
+                                <span class="structure-value">$8,333</span>
+                            </div>
+                        </div>
+
+                        <div class="structure-card">
+                            <div class="structure-title">Allowances</div>
+                            <div class="structure-item">
+                                <span class="structure-label">Transport</span>
+                                <span class="structure-value">$200</span>
+                            </div>
+                            <div class="structure-item">
+                                <span class="structure-label">Meal</span>
+                                <span class="structure-value">$150</span>
+                            </div>
+                            <div class="structure-item">
+                                <span class="structure-label">Internet</span>
+                                <span class="structure-value">$50</span>
+                            </div>
+                            <div class="structure-item">
+                                <span class="structure-label">Total Allowances</span>
+                                <span class="structure-value">$400</span>
+                            </div>
+                        </div>
+
+                        <div class="structure-card">
+                            <div class="structure-title">Deductions</div>
+                            <div class="structure-item">
+                                <span class="structure-label">Tax</span>
+                                <span class="structure-value">$2,000</span>
+                            </div>
+                            <div class="structure-item">
+                                <span class="structure-label">Insurance</span>
+                                <span class="structure-value">$300</span>
+                            </div>
+                            <div class="structure-item">
+                                <span class="structure-label">Retirement</span>
+                                <span class="structure-value">$500</span>
+                            </div>
+                            <div class="structure-item">
+                                <span class="structure-label">Total Deductions</span>
+                                <span class="structure-value">$2,800</span>
+                            </div>
+                        </div>
+
+                        <div class="structure-card">
+                            <div class="structure-title">Net Salary</div>
+                            <div class="structure-item">
+                                <span class="structure-label">Gross Salary</span>
+                                <span class="structure-value">$100,400</span>
+                            </div>
+                            <div class="structure-item">
+                                <span class="structure-label">Total Deductions</span>
+                                <span class="structure-value">-$2,800</span>
+                            </div>
+                            <div class="structure-item" style="border-top: 2px solid #333; margin-top: 10px; padding-top: 15px;">
+                                <span class="structure-label" style="font-weight: 600;">Net Pay</span>
+                                <span class="structure-value" style="font-size: 18px; font-weight: 600; color: #2196f3;">$97,600</span>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" onclick="editStructure()">Edit Salary Structure</button>
+                </div>
+            </div>
+
+            <!-- Pay Grades & Bands -->
+            <div id="grades" class="content-section">
+                <div class="section-card">
+                    <div class="section-title">Pay Grades & Bands</div>
+                    <div class="grade-card">
+                        <div class="grade-header">
+                            <div class="grade-name">Grade A - Executive</div>
+                            <div class="grade-range">$150,000 - $250,000</div>
+                        </div>
+                        <div class="grade-details">
+                            <div class="grade-detail-item">
+                                <span class="grade-detail-label">Min Salary</span>
+                                <span class="grade-detail-value">$150,000</span>
+                            </div>
+                            <div class="grade-detail-item">
+                                <span class="grade-detail-label">Max Salary</span>
+                                <span class="grade-detail-value">$250,000</span>
+                            </div>
+                            <div class="grade-detail-item">
+                                <span class="grade-detail-label">Mid Point</span>
+                                <span class="grade-detail-value">$200,000</span>
+                            </div>
+                            <div class="grade-detail-item">
+                                <span class="grade-detail-label">Employees</span>
+                                <span class="grade-detail-value">5</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grade-card">
+                        <div class="grade-header">
+                            <div class="grade-name">Grade B - Senior</div>
+                            <div class="grade-range">$100,000 - $150,000</div>
+                        </div>
+                        <div class="grade-details">
+                            <div class="grade-detail-item">
+                                <span class="grade-detail-label">Min Salary</span>
+                                <span class="grade-detail-value">$100,000</span>
+                            </div>
+                            <div class="grade-detail-item">
+                                <span class="grade-detail-label">Max Salary</span>
+                                <span class="grade-detail-value">$150,000</span>
+                            </div>
+                            <div class="grade-detail-item">
+                                <span class="grade-detail-label">Mid Point</span>
+                                <span class="grade-detail-value">$125,000</span>
+                            </div>
+                            <div class="grade-detail-item">
+                                <span class="grade-detail-label">Employees</span>
+                                <span class="grade-detail-value">25</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grade-card">
+                        <div class="grade-header">
+                            <div class="grade-name">Grade C - Mid-Level</div>
+                            <div class="grade-range">$60,000 - $100,000</div>
+                        </div>
+                        <div class="grade-details">
+                            <div class="grade-detail-item">
+                                <span class="grade-detail-label">Min Salary</span>
+                                <span class="grade-detail-value">$60,000</span>
+                            </div>
+                            <div class="grade-detail-item">
+                                <span class="grade-detail-label">Max Salary</span>
+                                <span class="grade-detail-value">$100,000</span>
+                            </div>
+                            <div class="grade-detail-item">
+                                <span class="grade-detail-label">Mid Point</span>
+                                <span class="grade-detail-value">$80,000</span>
+                            </div>
+                            <div class="grade-detail-item">
+                                <span class="grade-detail-label">Employees</span>
+                                <span class="grade-detail-value">120</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grade-card">
+                        <div class="grade-header">
+                            <div class="grade-name">Grade D - Junior</div>
+                            <div class="grade-range">$40,000 - $60,000</div>
+                        </div>
+                        <div class="grade-details">
+                            <div class="grade-detail-item">
+                                <span class="grade-detail-label">Min Salary</span>
+                                <span class="grade-detail-value">$40,000</span>
+                            </div>
+                            <div class="grade-detail-item">
+                                <span class="grade-detail-label">Max Salary</span>
+                                <span class="grade-detail-value">$60,000</span>
+                            </div>
+                            <div class="grade-detail-item">
+                                <span class="grade-detail-label">Mid Point</span>
+                                <span class="grade-detail-value">$50,000</span>
+                            </div>
+                            <div class="grade-detail-item">
+                                <span class="grade-detail-label">Employees</span>
+                                <span class="grade-detail-value">98</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button class="btn btn-primary" style="margin-top: 20px;" onclick="addPayGrade()">+ Add New Pay Grade</button>
+                </div>
+            </div>
+
+            <!-- Bonuses & Incentives -->
+            <div id="bonuses" class="content-section">
+                <div class="section-card">
+                    <div class="section-title">Bonuses & Incentives</div>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Employee</th>
+                                    <th>Bonus Type</th>
+                                    <th>Amount</th>
+                                    <th>Period</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>John Doe</td>
+                                    <td>Performance Bonus</td>
+                                    <td>$5,000</td>
+                                    <td>Q3 2024</td>
+                                    <td><span style="padding: 4px 12px; border-radius: 12px; font-size: 12px; background: #e8f5e9; color: #4caf50;">Paid</span></td>
+                                    <td><span style="color: #2196f3; cursor: pointer;">View</span></td>
+                                </tr>
+                                <tr>
+                                    <td>Sarah Johnson</td>
+                                    <td>Annual Bonus</td>
+                                    <td>$10,000</td>
+                                    <td>2024</td>
+                                    <td><span style="padding: 4px 12px; border-radius: 12px; font-size: 12px; background: #fff9e6; color: #ff9800;">Pending</span></td>
+                                    <td><span style="color: #2196f3; cursor: pointer;">View</span></td>
+                                </tr>
+                                <tr>
+                                    <td>Michael Chen</td>
+                                    <td>Retention Bonus</td>
+                                    <td>$7,500</td>
+                                    <td>2024</td>
+                                    <td><span style="padding: 4px 12px; border-radius: 12px; font-size: 12px; background: #e8f5e9; color: #4caf50;">Paid</span></td>
+                                    <td><span style="color: #2196f3; cursor: pointer;">View</span></td>
+                                </tr>
+                                <tr>
+                                    <td>Emily Rodriguez</td>
+                                    <td>Sales Incentive</td>
+                                    <td>$3,000</td>
+                                    <td>Nov 2024</td>
+                                    <td><span style="padding: 4px 12px; border-radius: 12px; font-size: 12px; background: #e8f5e9; color: #4caf50;">Paid</span></td>
+                                    <td><span style="color: #2196f3; cursor: pointer;">View</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <button class="btn btn-primary" style="margin-top: 15px;" onclick="addBonus()">+ Add Bonus/Incentive</button>
+                </div>
+
+                <div class="section-card">
+                    <div class="section-title">Add Bonus/Incentive</div>
+                    <form class="form-grid">
+                        <div class="form-group">
+                            <label>Employee *</label>
+                            <select required>
+                                <option>Select Employee</option>
+                                <option>John Doe</option>
+                                <option>Sarah Johnson</option>
+                                <option>Michael Chen</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Bonus Type *</label>
+                            <select required>
+                                <option>Performance Bonus</option>
+                                <option>Annual Bonus</option>
+                                <option>Retention Bonus</option>
+                                <option>Sales Incentive</option>
+                                <option>Project Bonus</option>
+                                <option>Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Amount *</label>
+                            <input type="number" placeholder="Enter amount" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Period *</label>
+                            <input type="text" placeholder="e.g., Q3 2024, Nov 2024" required>
+                        </div>
+                        <div class="form-group full-width">
+                            <label>Description</label>
+                            <textarea rows="3" placeholder="Enter bonus description or reason..."></textarea>
+                        </div>
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-primary">Add Bonus</button>
+                            <button type="button" class="btn btn-secondary" style="margin-left: 10px;">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Compensation History -->
+            <div id="history" class="content-section">
+                <div class="section-card">
+                    <div class="section-title">Compensation History</div>
+                    <div style="margin-bottom: 20px;">
+                        <select style="padding: 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px;">
+                            <option>Select Employee</option>
+                            <option>John Doe</option>
+                            <option>Sarah Johnson</option>
+                            <option>Michael Chen</option>
+                        </select>
+                    </div>
+                    <div>
+                        <div class="history-item">
+                            <div class="history-date">Jan 2024</div>
+                            <div class="history-content">
+                                <div class="history-title">Salary Increase</div>
+                                <div class="history-details">Base salary increased from $95,000 to $100,000 (5.3% increase)</div>
+                            </div>
+                        </div>
+                        <div class="history-item">
+                            <div class="history-date">Mar 2024</div>
+                            <div class="history-content">
+                                <div class="history-title">Allowance Adjustment</div>
+                                <div class="history-details">Transport allowance increased from $150 to $200</div>
+                            </div>
+                        </div>
+                        <div class="history-item">
+                            <div class="history-date">Sep 2024</div>
+                            <div class="history-content">
+                                <div class="history-title">Performance Bonus</div>
+                                <div class="history-details">Q3 Performance bonus of $5,000 awarded</div>
+                            </div>
+                        </div>
+                        <div class="history-item">
+                            <div class="history-date">Nov 2024</div>
+                            <div class="history-content">
+                                <div class="history-title">Promotion</div>
+                                <div class="history-details">Promoted to Senior Software Engineer. Base salary increased to $110,000</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function navigateToPage(page) {
+            const pages = {
+                'dashboard': 'hr-dashboard.html',
+                'myinfo': 'my-info.html',
+                'people': 'people.html',
+                'hiring': 'hiring-onboarding.html',
+                'performance': 'performance.html',
+                'compensation': 'compensation.html',
+                'payroll': 'payroll.html',
+                'training': 'training.html',
+                'reports': 'reports.html',
+                'inbox': 'inbox.html'
+            };
+            
+            if (pages[page] && pages[page] !== '#') {
+                window.location.href = pages[page];
+            }
+        }
+
+        function showTab(tabName) {
+            document.querySelectorAll('.content-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        function editStructure() {
+            alert('Edit salary structure form will open');
+        }
+
+        function addPayGrade() {
+            alert('Add pay grade form will open');
+        }
+
+        function addBonus() {
+            showTab('bonuses');
+        }
+    </script>
+</body>
+</html>
